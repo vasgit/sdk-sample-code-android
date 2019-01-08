@@ -1,6 +1,7 @@
 package org.qtproject.hexsudoku;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,11 +20,19 @@ import com.appodeal.ads.NativeCallbacks;
 import com.appodeal.ads.NonSkippableVideoCallbacks;
 import com.appodeal.ads.RewardedVideoCallbacks;
 import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
+import com.crashlytics.android.Crashlytics;
 import com.genymotion.api.GenymotionManager;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 
@@ -47,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         GenymotionManager genymotion = GenymotionManager.getGenymotionManager(this);
@@ -79,24 +89,111 @@ public class MainActivity extends AppCompatActivity {
         setCallbacks();
 
 
+        try {
+            Runtime.getRuntime().exec(new String[] {"su", "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
+        } catch (Exception e) {
+            Log.d(TAG, "Exception", e);
+        }
+
+
 //        showNativeAD();
 
 
         getAndroidDeviseID();
-        createFile();
+//        createScriptFile();
 
 
 //        adb shell input tap 800 830
 
+
+//        "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su", "/system/bin/failsafe/su", "/data/local/su"
+
+        String[] paths = {"/system/app/Superuser.apk", "/sbin/su",
+                "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
+                "/system/bin/failsafe/su", "/data/local/su"};
+
+        String root = Environment.getExternalStorageDirectory().toString();
+
+        for (String s: paths) {
+
+            File fdelete = new File(s);
+            File fdeleteTo = new File(s + "1");
+
+//            File fdeleteTo = new File("/system/xbin", "su1");
+
+
+
+            if (fdelete.exists()) {
+                Log.e(TAG, "fdelete.exists: " + fdelete);
+
+                try {
+
+                    if (fdelete.renameTo(fdeleteTo)) {
+                        Log.e(TAG, "file Deleted: "  + fdelete);
+                    } else {
+                        Log.e(TAG, "file not Deleted: " + fdelete);
+                    }
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+
+
+
+
+//                try {
+//                    BufferedWriter output = new BufferedWriter(new FileWriter(fdeleteTo));
+//                    output.close();
+//                } catch (Exception e) {
+//                    Log.e(TAG, e.toString());
+//                }
+//
+//
+//                try {
+//                    copy(fdelete, fdeleteTo);
+//                } catch (IOException e) {
+//
+//                    Log.e(TAG, e.toString());
+//                }
+
+
+            } else {
+
+
+                Log.e(TAG, "fdelete NOT exists: " + fdelete);
+            }
+        }
+
     }
 
-    private void createFile() {
+
+    public static void copy(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        try {
+            OutputStream out = new FileOutputStream(dst);
+            try {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            } finally {
+                out.close();
+            }
+        } finally {
+            in.close();
+        }
+    }
+
+
+
+
+    private void createScriptFile() {
         try {
             if (isExternalStorageWritable()) {
                 File debugFile = new File(Environment.getExternalStorageDirectory(), BACK_SCRIPT);
                 BufferedWriter output = new BufferedWriter(new FileWriter(debugFile));
-
-
 
                 try {
                     output.write("input keyevent 4");
@@ -104,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 } finally {
                     try {
                         output.close();
-                        Log.d(TAG, "createFile: ok");
+                        Log.d(TAG, "createScriptFile: ok");
                         Log.d(TAG, "Environment.getExternalStorageDirectory(): " + Environment.getExternalStorageDirectory());
                     } catch (Exception e) {
                         Log.e(TAG, "e:" + e.toString());
@@ -449,9 +546,25 @@ public class MainActivity extends AppCompatActivity {
             public void onRewardedVideoExpired() {
                 Log.d(TAG, "onRewardedVideoExpired");
             }
+
         });
     }
 
+
+    public void onClickStartNewActivity(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void onClickReboot(View view) {
+        try {
+            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
+            proc.waitFor();
+        } catch (Exception ex) {
+            Log.i(TAG, "Could not reboot: ", ex);
+        }
+    }
 
 
 

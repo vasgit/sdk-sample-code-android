@@ -11,6 +11,7 @@
 
 
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -296,6 +297,10 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
         <!-- End Mailru -->
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="33677174d2028e20757143b5f08eb350f87933aa" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

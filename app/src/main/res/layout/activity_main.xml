@@ -63,8 +63,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClickGetFps"
+            android:textAllCaps="false"
             android:text="startTestActivity"/>
 
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickStartNewActivity"
+            android:textAllCaps="false"
+            android:text="startNewActivity"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickReboot"
+            android:textAllCaps="false"
+            android:text="Reboot"/>
 
     </LinearLayout>
 
