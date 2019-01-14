@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "806051326763",
+    "firebase_url": "https://hexsudoku-16b52.firebaseio.com",
+    "project_id": "hexsudoku-16b52",
+    "storage_bucket": "hexsudoku-16b52.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806051326763:android:1361e400151dc420",
+        "android_client_info": {
+          "package_name": "org.qtproject.hexsudoku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "806051326763-7vjlq3eg832cedetkktku4u0lf1quv2m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuRBa-Z2wOTkasR89VTm1w6MhVU-qLq8g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

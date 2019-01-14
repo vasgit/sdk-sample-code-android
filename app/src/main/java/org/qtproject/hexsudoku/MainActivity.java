@@ -22,6 +22,8 @@ import com.appodeal.ads.RewardedVideoCallbacks;
 import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
 import com.crashlytics.android.Crashlytics;
 import com.genymotion.api.GenymotionManager;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import io.fabric.sdk.android.Fabric;
 import java.io.BufferedWriter;
@@ -32,7 +34,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.List;
 
 
@@ -53,11 +54,24 @@ public class MainActivity extends AppCompatActivity {
     NativeAdViewNewsFeed nav_nf;
     private String androidDeviseID;
 
+    private static Tracker mTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
+
+
+        MyApplication application = (MyApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
+
+
+        mTracker.setScreenName("onCreate");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("category_vas").setAction("action_vas").setLabel("label_vas").build());
+
 
         GenymotionManager genymotion = GenymotionManager.getGenymotionManager(this);
         genymotion.getBattery().setLevel(50);
@@ -86,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         Appodeal.cache(this, Appodeal.NATIVE, 1);
 
-        setCallbacks();
+        setAppodealCallbacks();
 
 
         try {
@@ -373,30 +387,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void setCallbacks() {
-
+    private void setAppodealCallbacks() {
 
         Appodeal.setNativeCallbacks(new NativeCallbacks() {
             @Override
             public void onNativeLoaded() {
                 Log.d("Appodeal", "onNativeLoaded ");
-
-
             }
 
             @Override
             public void onNativeShown(NativeAd nativeAd) {
                 Log.d("Appodeal", "onNativeShown");
-
-
             }
 
             @Override
             public void onNativeClicked(NativeAd nativeAd) {
                 Log.d("Appodeal", "onNativeClicked");
             }
-
-
 
             @Override
             public void onNativeFailedToLoad() {
@@ -408,7 +415,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
         Appodeal.setBannerCallbacks(new BannerCallbacks() {
 
@@ -567,7 +573,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    public void onClickTestCrash(View view) {
+        Crashlytics.getInstance().crash();
+    }
 }
 
 

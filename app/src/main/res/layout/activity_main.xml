@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:onClick="onClickGetFps"
             android:textAllCaps="false"
-            android:text="startTestActivity"/>
+            android:text="appodeal TestActivity"/>
 
 
     </LinearLayout>
@@ -86,6 +86,13 @@
             android:onClick="onClickReboot"
             android:textAllCaps="false"
             android:text="Reboot"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickTestCrash"
+            android:textAllCaps="false"
+            android:text="test crash"/>
 
     </LinearLayout>
 
