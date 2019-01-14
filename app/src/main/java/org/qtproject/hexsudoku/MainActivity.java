@@ -1,11 +1,8 @@
 package org.qtproject.hexsudoku;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,40 +18,24 @@ import com.appodeal.ads.NonSkippableVideoCallbacks;
 import com.appodeal.ads.RewardedVideoCallbacks;
 import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
 import com.crashlytics.android.Crashlytics;
-import com.genymotion.api.GenymotionManager;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 
 import io.fabric.sdk.android.Fabric;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private static String TAG = MainActivity.class.getName();
+    private Utils utils;
 
     private boolean isInApp = false;
     private boolean isSkipVideo = false;
     private boolean isInterstitial = false;
 
-    private static final String BACK_SCRIPT = "backScript.sh";
 
+    private BannerView appodealBannerView;
+    private NativeAdViewNewsFeed nav_nf;
 
-    private static String TAG = "MainActivity";
-
-
-    BannerView appodealBannerView;
-    NativeAdViewNewsFeed nav_nf;
-    private String androidDeviseID;
-
-    private static Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,291 +43,14 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
+        utils = new Utils(this);
 
-        MyApplication application = (MyApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        utils.chengeGenymotionData();
+//        utils.checngeGoogleAdvertisingID(true);
 
+        utils.initGA();
 
-
-        mTracker.setScreenName("onCreate");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        mTracker.send(new HitBuilders.EventBuilder().setCategory("category_vas").setAction("action_vas").setLabel("label_vas").build());
-
-
-        GenymotionManager genymotion = GenymotionManager.getGenymotionManager(this);
-        genymotion.getBattery().setLevel(50);
-
-        genymotion.getId().setRandomAndroidId();
-
-
-
-        BannerView appodealBannerView = (BannerView) findViewById(R.id.appodealBannerView);
-
-
-        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
-//        Appodeal.setTesting(true);
-
-        Appodeal.setBannerViewId(R.id.appodealBannerView);
-
-
-        nav_nf = (NativeAdViewNewsFeed) findViewById(R.id.native_ad_view_news_feed);
-
-//        offNetworks();
-
-
-        Appodeal.initialize(this, "14b84e43b51b7a58cefa66808a6b05337d3a972a5ea49684", Appodeal.NATIVE | Appodeal.REWARDED_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL);
-
-        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
-
-        Appodeal.cache(this, Appodeal.NATIVE, 1);
-
-        setAppodealCallbacks();
-
-
-        try {
-            Runtime.getRuntime().exec(new String[] {"su", "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
-        } catch (Exception e) {
-            Log.d(TAG, "Exception", e);
-        }
-
-
-//        showNativeAD();
-
-
-        getAndroidDeviseID();
-//        createScriptFile();
-
-
-//        adb shell input tap 800 830
-
-
-//        "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su", "/system/bin/failsafe/su", "/data/local/su"
-
-        String[] paths = {"/system/app/Superuser.apk", "/sbin/su",
-                "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
-                "/system/bin/failsafe/su", "/data/local/su"};
-
-        String root = Environment.getExternalStorageDirectory().toString();
-
-        for (String s: paths) {
-
-            File fdelete = new File(s);
-            File fdeleteTo = new File(s + "1");
-
-//            File fdeleteTo = new File("/system/xbin", "su1");
-
-
-
-            if (fdelete.exists()) {
-                Log.e(TAG, "fdelete.exists: " + fdelete);
-
-                try {
-
-                    if (fdelete.renameTo(fdeleteTo)) {
-                        Log.e(TAG, "file Deleted: "  + fdelete);
-                    } else {
-                        Log.e(TAG, "file not Deleted: " + fdelete);
-                    }
-
-                } catch (Exception e) {
-                    Log.e(TAG, e.toString());
-                }
-
-
-
-
-//                try {
-//                    BufferedWriter output = new BufferedWriter(new FileWriter(fdeleteTo));
-//                    output.close();
-//                } catch (Exception e) {
-//                    Log.e(TAG, e.toString());
-//                }
-//
-//
-//                try {
-//                    copy(fdelete, fdeleteTo);
-//                } catch (IOException e) {
-//
-//                    Log.e(TAG, e.toString());
-//                }
-
-
-            } else {
-
-
-                Log.e(TAG, "fdelete NOT exists: " + fdelete);
-            }
-        }
-
-    }
-
-
-    public static void copy(File src, File dst) throws IOException {
-        InputStream in = new FileInputStream(src);
-        try {
-            OutputStream out = new FileOutputStream(dst);
-            try {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-            } finally {
-                out.close();
-            }
-        } finally {
-            in.close();
-        }
-    }
-
-
-
-
-    private void createScriptFile() {
-        try {
-            if (isExternalStorageWritable()) {
-                File debugFile = new File(Environment.getExternalStorageDirectory(), BACK_SCRIPT);
-                BufferedWriter output = new BufferedWriter(new FileWriter(debugFile));
-
-                try {
-                    output.write("input keyevent 4");
-
-                } finally {
-                    try {
-                        output.close();
-                        Log.d(TAG, "createScriptFile: ok");
-                        Log.d(TAG, "Environment.getExternalStorageDirectory(): " + Environment.getExternalStorageDirectory());
-                    } catch (Exception e) {
-                        Log.e(TAG, "e:" + e.toString());
-                    }
-                }
-            } else {
-                Log.d(TAG, "Debug File: Storage not writable");
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "Exception", e);
-        }
-    }
-
-    private static boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-
-    private void clickBask(int delay) {
-        Log.d(TAG, "clickBask() delay: " + delay);
-        Handler uiHandler = new Handler(Looper.getMainLooper());
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            String sss = "sh " + Environment.getExternalStorageDirectory() + "/" + BACK_SCRIPT;
-                            Log.d(TAG, "sss: " + sss);
-//                            Runtime.getRuntime().exec(sss);
-
-                            Runtime.getRuntime().exec(new String[] {"su", "-c", "input keyevent 4"});
-
-//                            Runtime.getRuntime().exec(new String[] {"input keyevent 4"});
-
-                            Log.e(TAG, "START adb shell keyevent");
-                        } catch (Exception e) {
-                            Log.e(TAG, e.toString());
-                        }
-                    }
-                });
-            }
-        }, delay);
-
-
-
-    }
-
-    private void startBaskInApp() {
-        Log.d(TAG, "startBaskInApp()");
-//        clickBask(10000);
-//        checkFocusInApp(14000);
-    }
-
-    private void checkFocusInApp(int delay) {
-        Log.d(TAG, "checkFocusInApp() delay: " + delay);
-        Handler uiHandler = new Handler(Looper.getMainLooper());
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isInApp) {
-                    Log.e(TAG, "checkFocusInApp() NOT in App ");
-                    clickBask(500);
-                    checkFocusInApp(4000);
-                } else {
-                    Log.d(TAG, "checkFocusInApp() In App ");
-                }
-            }
-        }, delay);
-    }
-
-
-    private void startClickOnAd() {
-        clickOnAd(12000);
-
-    }
-
-
-    private void clickOnAd(int delay) {
-        Handler uiHandler = new Handler(Looper.getMainLooper());
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-//                    Runtime.getRuntime().exec("input tap 800 830");
-                    Log.e(TAG, "START adb shell TAP");
-
-                    checkFocusInApp(5000);
-                } catch (Exception e) {
-                    Log.e(TAG, e.toString());
-                }
-            }
-        }, delay);
-    }
-
-
-
-
-    @SuppressLint("HardwareIds")
-    private void getAndroidDeviseID() {
-        try {
-            androidDeviseID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-            androidDeviseID = "";
-        }
-        Log.d(TAG, "ANDROID_DEVISE_ID=" + androidDeviseID);
-    }
-
-    private void showNativeAD() {
-
-        Handler uiHandler = new Handler(Looper.getMainLooper());
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-
-
-
-                List<NativeAd> nativeAds = Appodeal.getNativeAds(1);
-                if (nativeAds.size() > 0) {
-                    nav_nf.setNativeAd(nativeAds.get(0));
-                }
-                Appodeal.cache(MainActivity.this, Appodeal.NATIVE, 1);
-                showNativeAD();
-
-
-            }
-        },5000);
+        initAppodealSdk();
     }
 
     @Override
@@ -361,58 +65,189 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void bannerprog(View view) {
+
+    /**
+     * click on Ad and return to app
+     */
+    private void clickBack(int delay) {
+        Log.d(TAG, "clickBack() delay: " + delay);
+        Handler uiHandler = new Handler(Looper.getMainLooper());
+        uiHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Runtime.getRuntime().exec(new String[] {"su", "-c", "input keyevent 4"});
+
+                            Log.e(TAG, "START adb shell keyevent clickBack");
+                        } catch (Exception e) {
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                });
+            }
+        }, delay);
+
+    }
+
+    private void clickOnAd(int delay) {
+        Handler uiHandler = new Handler(Looper.getMainLooper());
+        uiHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+//                    Runtime.getRuntime().exec("input tap 800 830");
+                    Log.e(TAG, "START adb shell TAP");
+
+                    backFocusInApp(5000);
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        }, delay);
+    }
+
+    private void backFocusInApp(int delay) {
+        Log.d(TAG, "backFocusInApp() delay: " + delay);
+        Handler uiHandler = new Handler(Looper.getMainLooper());
+        uiHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isInApp) {
+                    Log.e(TAG, "backFocusInApp() NOT in App ");
+                    clickBack(500);
+                    backFocusInApp(4000);
+                } else {
+                    Log.d(TAG, "backFocusInApp() In App ");
+                }
+            }
+        }, delay);
+    }
+
+    private void startBaskInApp() {
+        Log.d(TAG, "startBaskInApp()");
+//        clickBack(10000);
+//        backFocusInApp(14000);
+    }
+
+    private void startClickOnAd() {
+        clickOnAd(12000);
+    }
+    //*************************************
+
+
+
+
+    /**
+     * work with View Button
+     */
+    public void onClickBannerShowProg(View view) {
         Appodeal.show(this, Appodeal.BANNER_BOTTOM);
     }
 
-    public void bannerxml(View view) {
+    public void onClickBannerShowXml(View view) {
         Appodeal.show(this, Appodeal.BANNER_VIEW);
     }
 
-    public void Interstitial(View view) {
+    public void onClickInterstitialShow(View view) {
         Appodeal.show(this, Appodeal.INTERSTITIAL);
     }
 
-    public void Rewarded(View view) {
+    public void onClickRewardedShow(View view) {
         Appodeal.show(this, Appodeal.REWARDED_VIDEO);
     }
 
-
-
-
-    public void onClickGetFps(View view) {
+    public void onClickStartTestActivityAppodeal(View view) {
         Appodeal.startTestActivity(this);
     }
 
+    public void onClickStartNewActivity(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickRebootPhone(View view) {
+       utils.rebootPhone();
+    }
+
+    public void onClickTestCrash(View view) {
+        Crashlytics.getInstance().crash();
+    }
+    //*************************************
 
 
+
+    /**
+     * work with AppodealSdk
+     */
+    private void initAppodealSdk() {
+        BannerView appodealBannerView = (BannerView) findViewById(R.id.appodealBannerView);
+
+        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
+//        Appodeal.setTesting(true);
+
+        Appodeal.setBannerViewId(R.id.appodealBannerView);
+        nav_nf = findViewById(R.id.native_ad_view_news_feed);
+
+        offNetworks();
+
+        Appodeal.initialize(this, AppConstants.APPODEAL_APP_KEY, AppConstants.APPODEAL_AD_TYPES);
+        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
+        Appodeal.cache(this, Appodeal.NATIVE, 1);
+
+        setAppodealCallbacks();
+
+//        showNativeAD();
+    }
+
+    private void offNetworks() {
+//        Appodeal.disableNetwork(this, "adcolony", AppConstants.APPODEAL_AD_TYPES);
+//        Appodeal.disableNetwork(this, "admob", AppConstants.APPODEAL_AD_TYPES);
+    }
+
+    private void showNativeAD() {
+        Handler uiHandler = new Handler(Looper.getMainLooper());
+        uiHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                List<NativeAd> nativeAds = Appodeal.getNativeAds(1);
+                if (nativeAds.size() > 0) {
+                    nav_nf.setNativeAd(nativeAds.get(0));
+                }
+                Appodeal.cache(MainActivity.this, Appodeal.NATIVE, 1);
+                showNativeAD();
+            }
+        },5000);
+    }
 
     private void setAppodealCallbacks() {
 
         Appodeal.setNativeCallbacks(new NativeCallbacks() {
             @Override
             public void onNativeLoaded() {
-                Log.d("Appodeal", "onNativeLoaded ");
+                Log.d(TAG, "onNativeLoaded");
             }
 
             @Override
             public void onNativeShown(NativeAd nativeAd) {
-                Log.d("Appodeal", "onNativeShown");
+                Log.d(TAG, "onNativeShown");
             }
 
             @Override
             public void onNativeClicked(NativeAd nativeAd) {
-                Log.d("Appodeal", "onNativeClicked");
+                Log.d(TAG, "onNativeClicked");
             }
 
             @Override
             public void onNativeFailedToLoad() {
-                Log.d("Appodeal", "onNativeFailedToLoad");
+                Log.d(TAG, "onNativeFailedToLoad");
             }
 
             @Override
             public void onNativeExpired() {
-
+                Log.d(TAG, "onNativeExpired");
             }
         });
 
@@ -420,35 +255,31 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBannerLoaded(int i, boolean b) {
-                Log.d(TAG, "onBannerLoaded start");
+                Log.d(TAG, "onBannerLoaded");
             }
 
             @Override
             public void onBannerFailedToLoad() {
-                Log.d("Appodeal", "onBannerFailedToLoad");
+                Log.d(TAG, "onBannerFailedToLoad");
             }
 
             @Override
             public void onBannerShown() {
-
+                Log.d(TAG, "onBannerShown");
             }
 
             @Override
             public void onBannerClicked() {
-
                 Log.d(TAG, "onBannerClicked");
                 isInApp = false;
                 startBaskInApp();
-
-
             }
 
             @Override
             public void onBannerExpired() {
-
+                Log.d(TAG, "onBannerExpired");
             }
         });
-
 
         Appodeal.setInterstitialCallbacks(new InterstitialCallbacks() {
             @Override
@@ -555,27 +386,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-
-
-    public void onClickStartNewActivity(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-
-    public void onClickReboot(View view) {
-        try {
-            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
-            proc.waitFor();
-        } catch (Exception ex) {
-            Log.i(TAG, "Could not reboot: ", ex);
-        }
-    }
-
-
-    public void onClickTestCrash(View view) {
-        Crashlytics.getInstance().crash();
-    }
+    //*************************************
 }
 
 

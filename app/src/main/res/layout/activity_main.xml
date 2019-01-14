@@ -22,13 +22,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="bannerprog"
+            android:onClick="onClickBannerShowProg"
             android:text="banner prog"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="bannerxml"
+            android:onClick="onClickBannerShowXml"
             android:text="banner xml"/>
 
 
@@ -43,13 +43,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="Interstitial"
+            android:onClick="onClickInterstitialShow"
             android:text="Interstitial"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="Rewarded"
+            android:onClick="onClickRewardedShow"
             android:text="Rewarded"/>
 
 
@@ -62,7 +62,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onClickGetFps"
+            android:onClick="onClickStartTestActivityAppodeal"
             android:textAllCaps="false"
             android:text="appodeal TestActivity"/>
 
@@ -83,7 +83,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onClickReboot"
+            android:onClick="onClickRebootPhone"
             android:textAllCaps="false"
             android:text="Reboot"/>
 
