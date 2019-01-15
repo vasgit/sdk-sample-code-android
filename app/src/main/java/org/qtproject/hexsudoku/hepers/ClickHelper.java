@@ -1,4 +1,4 @@
-package org.qtproject.hexsudoku;
+package org.qtproject.hexsudoku.hepers;
 
 import android.app.Activity;
 import android.os.Environment;
