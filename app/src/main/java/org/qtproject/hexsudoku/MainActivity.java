@@ -20,7 +20,6 @@ import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
 import com.crashlytics.android.Crashlytics;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
-import org.qtproject.hexsudoku.hepers.DeviceHelper;
 
 import io.fabric.sdk.android.Fabric;
 import java.util.List;
@@ -30,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static String TAG = MainActivity.class.getName();
     private Utils utils;
-    private DeviceHelper deviceHelper;
 
 
     private boolean isInApp = false;
@@ -49,15 +47,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         utils = new Utils(this);
-        deviceHelper = new DeviceHelper(this);
-
-        deviceHelper.chengeGenymotionData();
-//        deviceDataHepler.checngeGoogleAdvertisingID(true);
-
-        utils.initGA();
-
-        // ADB - Android - Getting the name of the current activity
-        // adb shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'
 
         initAppodealSdk();
     }
@@ -202,7 +191,10 @@ public class MainActivity extends AppCompatActivity {
 
         offNetworks();
 
-        Appodeal.initialize(this, AppConstants.APPODEAL_APP_KEY, AppConstants.APPODEAL_AD_TYPES);
+        if (!Appodeal.isInitialized(AppConstants.APPODEAL_AD_TYPES)) {
+            Appodeal.initialize(this, AppConstants.APPODEAL_APP_KEY, AppConstants.APPODEAL_AD_TYPES);
+        }
+
         Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
         Appodeal.cache(this, Appodeal.NATIVE, 1);
 
