@@ -16,11 +16,11 @@ public class RootHelper {
     private static String TAG = RootHelper.class.getName();
     private Activity activity;
 
-    RootHelper(Activity activity) {
+    public RootHelper(Activity activity) {
         this.activity = activity;
     }
 
-    void renamaRootFiles() {
+    public void renamaRootFiles() {
         //        "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su", "/system/bin/failsafe/su", "/data/local/su"
 
         String[] paths = {"/system/app/Superuser.apk", "/sbin/su",

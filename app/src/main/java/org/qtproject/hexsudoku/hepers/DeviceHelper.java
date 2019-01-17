@@ -2,12 +2,21 @@ package org.qtproject.hexsudoku.hepers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
 
 import com.genymotion.api.GenymotionManager;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 
 public class DeviceHelper {
@@ -78,6 +87,69 @@ public class DeviceHelper {
             }
         };
         task.execute();
+    }
+
+    public void chengeBuildProp() {
+
+
+        File fileBuildProp = new File("/system/build.prop");
+        if (fileBuildProp.exists()) {
+            Log.d(TAG, "fileBuildProp exists");
+            try {
+
+//                File debugFile = new File("/system/build123.prop");
+                File debugFile = new File(activity.getApplicationInfo().dataDir, "build.prop");
+                BufferedWriter output = new BufferedWriter(new FileWriter(debugFile));
+
+                BufferedReader br = new BufferedReader(new FileReader(fileBuildProp));
+                try {
+
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        Log.d(TAG, "line: " + line);
+                        output.write(line);
+                        output.newLine();
+
+                        output.write("#vasvas");
+                        output.newLine();
+                    }
+                } finally {
+                    try {
+                        output.close();
+                        br.close();
+                    } catch (Exception e) {
+                        Log.e(TAG, "e:" + e.toString());
+                    }
+                }
+
+                final String fileAbsolutePath = debugFile.getAbsolutePath();
+                Log.e(TAG, "fileAbsolutePath: " + fileAbsolutePath);
+
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Runtime.getRuntime().exec(new String[] {"su", "-c", "mv " + fileAbsolutePath + " /system/build.prop"});
+
+
+                            Log.d(TAG, "mv is OK");
+//                            /data/data/org.qtproject.hexsudoku/build.prop
+
+//                            adb shell mv /data/data/org.qtproject.hexsudoku/build.prop /system/build.prop
+
+                        } catch (Exception e) {
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                });
+
+            } catch (Exception e) {
+                Log.d(TAG, "Exception", e);
+            }
+        } else {
+            Log.d(TAG, "fileBuildProp NOT exists");
+        }
     }
 
 }

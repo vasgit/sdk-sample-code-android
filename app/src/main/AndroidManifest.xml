@@ -26,7 +26,7 @@
         android:name=".MyApplication"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".StartActivity">
+        <activity android:name=".StartActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

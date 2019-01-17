@@ -20,6 +20,7 @@ import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
 import com.crashlytics.android.Crashlytics;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
+import org.qtproject.hexsudoku.hepers.DeviceHelper;
 
 import io.fabric.sdk.android.Fabric;
 import java.util.List;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private BannerView appodealBannerView;
     private NativeAdViewNewsFeed nav_nf;
 
+    private DeviceHelper deviceHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         utils = new Utils(this);
+        deviceHelper = new DeviceHelper(this);
 
         initAppodealSdk();
     }
@@ -173,6 +177,10 @@ public class MainActivity extends AppCompatActivity {
     public void onClickTestCrash(View view) {
         Crashlytics.getInstance().crash();
     }
+
+    public void onClickChengeBuildProp(View view) {
+        deviceHelper.chengeBuildProp();
+    }
     //*************************************
 
 
@@ -183,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
     private void initAppodealSdk() {
         BannerView appodealBannerView = (BannerView) findViewById(R.id.appodealBannerView);
 
-        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
+        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.none);
 //        Appodeal.setTesting(true);
 
         Appodeal.setBannerViewId(R.id.appodealBannerView);
@@ -195,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
             Appodeal.initialize(this, AppConstants.APPODEAL_APP_KEY, AppConstants.APPODEAL_AD_TYPES);
         }
 
-        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.debug);
+        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.none);
         Appodeal.cache(this, Appodeal.NATIVE, 1);
 
         setAppodealCallbacks();
