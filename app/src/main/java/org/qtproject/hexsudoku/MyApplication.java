@@ -19,9 +19,9 @@ public class MyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-//        Utils.copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm),
-//                "default.realm",
-//                this.getFilesDir());
+        Utils.copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm_v4),
+                "default.realm",
+                this.getFilesDir());
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .deleteRealmIfMigrationNeeded()
@@ -31,7 +31,7 @@ public class MyApplication extends MultiDexApplication {
     }
 
     /**
-     * Gets the default_realm {@link Tracker} for this {@link Application}.
+     * Gets the default {@link Tracker} for this {@link Application}.
      *
      * @return tracker
      */

@@ -81,7 +81,7 @@ public class FillRealmData {
         deviceData.setName("samsung galaxy s5");
 
         //ro.build.version.sdk
-        deviceData.setRo_build_version_sdk("22");
+        deviceData.setRo_build_version_sdk(22);
         //ro.build.version.release
         deviceData.setRo_build_version_release("5.1.1");
         //ro.build.id
@@ -134,6 +134,10 @@ public class FillRealmData {
                 Environment.getExternalStorageDirectory().toString()
                         + "/Download/build_prop/build_prop/"));
 
+        if (files.size() == 0) {
+            Log.e(TAG, "/Download/build_prop/build_prop/ is EMPTY");
+        }
+
         for (File file : files) {
             if (file.exists()) {
                 try {
@@ -146,8 +150,11 @@ public class FillRealmData {
                         String line;
                         while ((line = br.readLine()) != null) {
                             if (line.contains(AppConstants.ro_build_version_sdk + "=")) {
-                                deviceData.setRo_build_version_sdk(line.replace(AppConstants.ro_build_version_sdk + "=", ""));
-
+                                try {
+                                    deviceData.setRo_build_version_sdk(Integer.valueOf(line.replace(AppConstants.ro_build_version_sdk + "=", "")));
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Exception", e);
+                                }
                             } else if (line.contains(AppConstants.ro_build_version_release + "=")) {
                                 deviceData.setRo_build_version_release(line.replace(AppConstants.ro_build_version_release + "=", ""));
 
@@ -217,7 +224,7 @@ public class FillRealmData {
                     addDevaceToRealm(deviceData);
                     idForDevaceData++;
                 } catch (Exception e) {
-                    Log.d(TAG, "Exception", e);
+                    Log.e(TAG, "Exception", e);
                 }
             }
         }
@@ -231,7 +238,7 @@ public class FillRealmData {
                 if (file.isDirectory()) {
                     inFiles.addAll(getListFiles(file));
                 } else {
-                    if (file.getName().endsWith(".log")) {
+                    if (file.getName().endsWith(".txt")) {
                         inFiles.add(file);
                     }
                 }

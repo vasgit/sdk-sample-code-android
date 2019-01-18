@@ -39,14 +39,14 @@ public class RootHelper {
 
 
             if (fdelete.exists()) {
-                Log.e(TAG, "fdelete.exists: " + fdelete);
+                Log.d(TAG, "fdelete.exists: " + fdelete);
 
                 try {
 
                     if (fdelete.renameTo(fdeleteTo)) {
-                        Log.e(TAG, "file Deleted: "  + fdelete);
+                        Log.d(TAG, "file Deleted: "  + fdelete);
                     } else {
-                        Log.e(TAG, "file not Deleted: " + fdelete);
+                        Log.d(TAG, "file not Deleted: " + fdelete);
                     }
 
                 } catch (Exception e) {

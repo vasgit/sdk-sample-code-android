@@ -54,7 +54,8 @@ public class StartActivity extends AppCompatActivity  {
 
 //        adb shell mount -o rw,remount /system
 
-        new FillRealmData(this).fill();
+//        todo: fill if need
+//        new FillRealmData(this).fill();
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

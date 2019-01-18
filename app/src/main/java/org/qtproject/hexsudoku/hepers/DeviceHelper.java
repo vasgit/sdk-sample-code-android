@@ -20,6 +20,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Random;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 
 public class DeviceHelper {
@@ -49,7 +53,7 @@ public class DeviceHelper {
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
-        Log.d(TAG, "androidDeviseID: " + androidDeviseID);
+        Log.i(TAG, "androidDeviseID: " + androidDeviseID);
     }
 
     public void checngeGoogleAdvertisingID(final boolean needChecngeAdID) {
@@ -76,14 +80,14 @@ public class DeviceHelper {
 
             @Override
             protected void onPostExecute(String advertId) {
-                Log.d(TAG, "GoogleAdvertisingID: " + advertId);
+                Log.i(TAG, "GoogleAdvertisingID: " + advertId);
 
                 if (needChecngeAdID) {
                     Log.d(TAG, "start change GoogleAdvertisingID");
                     try {
                         Runtime.getRuntime().exec(new String[]{"su", "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
                     } catch (Exception e) {
-                        Log.d(TAG, "Exception", e);
+                        Log.e(TAG, "Exception", e);
                     }
                     checngeGoogleAdvertisingID(false);
                 }
@@ -92,9 +96,21 @@ public class DeviceHelper {
         task.execute();
     }
 
-    public void chengeBuildProp() {
+    public void chengeBuildPropFile() {
 
-        DeviceDataRealm device = new DeviceDataRealm();
+        DeviceDataRealm device;
+
+        Realm mRealm = Realm.getDefaultInstance();
+        RealmResults<DeviceDataRealm> sectionsRealms = mRealm.where(DeviceDataRealm.class)
+                .equalTo("ro_build_version_sdk", android.os.Build.VERSION.SDK_INT)
+                .findAll();
+        if (sectionsRealms != null && !sectionsRealms.isEmpty()) {
+            Random r = new Random();
+            int i = r.nextInt(sectionsRealms.size() - 1);
+            device = sectionsRealms.get(i);
+        } else {
+            return;
+        }
 
         Utils.copyBundledRealmFile(activity.getResources().openRawResource(R.raw.build_prop),
                 "build_in.prop",
@@ -125,7 +141,7 @@ public class DeviceHelper {
                 }
 
                 final String fileAbsolutePath = outFile.getAbsolutePath();
-                Log.e(TAG, "fileAbsolutePath: " + fileAbsolutePath);
+                Log.i(TAG, "fileAbsolutePath: " + fileAbsolutePath);
 
 //                activity.runOnUiThread(new Runnable() {
 //                    @Override
@@ -144,10 +160,10 @@ public class DeviceHelper {
 //                });
 
             } catch (Exception e) {
-                Log.d(TAG, "Exception", e);
+                Log.e(TAG, "Exception", e);
             }
         } else {
-            Log.d(TAG, "inFile NOT exists");
+            Log.e(TAG, "inFile NOT exists");
         }
     }
 
@@ -155,65 +171,85 @@ public class DeviceHelper {
         if (TextUtils.isEmpty(line)) {
             return line;
         }
-        if (!TextUtils.isEmpty(device.getRo_build_version_sdk())) {
-            line = line.replace("%%" + AppConstants.ro_build_version_sdk + "%", device.getRo_build_version_sdk());
+        if (device.getRo_build_version_sdk() > 0 ) {
+            line = line.replace("%%" + AppConstants.ro_build_version_sdk + "%",
+                    String.valueOf(device.getRo_build_version_sdk()));
         }
         if (!TextUtils.isEmpty(device.getRo_build_version_release())) {
-            line = line.replace("%%" + AppConstants.ro_build_version_release + "%", device.getRo_build_version_release());
+            line = line.replace("%%" + AppConstants.ro_build_version_release + "%",
+                    device.getRo_build_version_release());
         }
         if (!TextUtils.isEmpty(device.getRo_build_id())) {
-            line = line.replace("%%" + AppConstants.ro_build_id + "%", device.getRo_build_id());
+            line = line.replace("%%" + AppConstants.ro_build_id + "%",
+                    device.getRo_build_id());
         }
         if (!TextUtils.isEmpty(device.getRo_build_display_id())) {
-            line = line.replace("%%" + AppConstants.ro_build_display_id + "%", device.getRo_build_display_id());
+            line = line.replace("%%" + AppConstants.ro_build_display_id + "%",
+                    device.getRo_build_display_id());
         }
         if (!TextUtils.isEmpty(device.getRo_build_version_incremental())) {
-            line = line.replace("%%" + AppConstants.ro_build_version_incremental + "%", device.getRo_build_version_incremental());
+            line = line.replace("%%" + AppConstants.ro_build_version_incremental + "%",
+                    device.getRo_build_version_incremental());
         }
         if (!TextUtils.isEmpty(device.getRo_build_date())) {
-            line = line.replace("%%" + AppConstants.ro_build_date + "%", device.getRo_build_date());
+            line = line.replace("%%" + AppConstants.ro_build_date + "%",
+                    device.getRo_build_date());
         }
         if (!TextUtils.isEmpty(device.getRo_build_date_utc())) {
-            line = line.replace("%%" + AppConstants.ro_build_date_utc + "%", device.getRo_build_date_utc());
+            line = line.replace("%%" + AppConstants.ro_build_date_utc + "%",
+                    device.getRo_build_date_utc());
         }
         if (!TextUtils.isEmpty(device.getRo_build_user())) {
-            line = line.replace("%%" + AppConstants.ro_build_user + "%", device.getRo_build_user());
+            line = line.replace("%%" + AppConstants.ro_build_user + "%",
+                    device.getRo_build_user());
         }
         if (!TextUtils.isEmpty(device.getRo_build_host())) {
-            line = line.replace("%%" + AppConstants.ro_build_host + "%", device.getRo_build_host());
+            line = line.replace("%%" + AppConstants.ro_build_host + "%",
+                    device.getRo_build_host());
         }
         if (!TextUtils.isEmpty(device.getRo_build_flavor())) {
-            line = line.replace("%%" + AppConstants.ro_build_flavor + "%", device.getRo_build_flavor());
+            line = line.replace("%%" + AppConstants.ro_build_flavor + "%",
+                    device.getRo_build_flavor());
         }
         if (!TextUtils.isEmpty(device.getRo_product_model())) {
-            line = line.replace("%%" + AppConstants.ro_product_model + "%", device.getRo_product_model());
+            line = line.replace("%%" + AppConstants.ro_product_model + "%",
+                    device.getRo_product_model());
         }
         if (!TextUtils.isEmpty(device.getRo_product_brand())) {
-            line = line.replace("%%" + AppConstants.ro_product_brand + "%", device.getRo_product_brand());
+            line = line.replace("%%" + AppConstants.ro_product_brand + "%",
+                    device.getRo_product_brand());
         }
         if (!TextUtils.isEmpty(device.getRo_product_name())) {
-            line = line.replace("%%" + AppConstants.ro_product_name + "%", device.getRo_product_name());
+            line = line.replace("%%" + AppConstants.ro_product_name + "%",
+                    device.getRo_product_name());
         }
         if (!TextUtils.isEmpty(device.getRo_product_device())) {
-            line = line.replace("%%" + AppConstants.ro_product_device + "%", device.getRo_product_device());
+            line = line.replace("%%" + AppConstants.ro_product_device + "%",
+                    device.getRo_product_device());
         }
         if (!TextUtils.isEmpty(device.getRo_product_board())) {
-            line = line.replace("%%" + AppConstants.ro_product_board + "%", device.getRo_product_board());
+            line = line.replace("%%" + AppConstants.ro_product_board + "%",
+                    device.getRo_product_board());
         }
         if (!TextUtils.isEmpty(device.getRo_product_manufacturer())) {
-            line = line.replace("%%" + AppConstants.ro_product_manufacturer + "%", device.getRo_product_manufacturer());
+            line = line.replace("%%" + AppConstants.ro_product_manufacturer + "%",
+                    device.getRo_product_manufacturer());
         }
         if (!TextUtils.isEmpty(device.getRo_product_locale_language())) {
-            line = line.replace("%%" + AppConstants.ro_product_locale_language + "%", device.getRo_product_locale_language());
+            line = line.replace("%%" + AppConstants.ro_product_locale_language + "%",
+                    device.getRo_product_locale_language());
         }
         if (!TextUtils.isEmpty(device.getRo_product_locale_region())) {
-            line = line.replace("%%" + AppConstants.ro_product_locale_region + "%", device.getRo_product_locale_region());
+            line = line.replace("%%" + AppConstants.ro_product_locale_region + "%",
+                    device.getRo_product_locale_region());
         }
         if (!TextUtils.isEmpty(device.getRo_build_description())) {
-            line = line.replace("%%" + AppConstants.ro_build_description + "%", device.getRo_build_description());
+            line = line.replace("%%" + AppConstants.ro_build_description + "%",
+                    device.getRo_build_description());
         }
         if (!TextUtils.isEmpty(device.getRo_build_fingerprint())) {
-            line = line.replace("%%" + AppConstants.ro_build_fingerprint + "%", device.getRo_build_fingerprint());
+            line = line.replace("%%" + AppConstants.ro_build_fingerprint + "%",
+                    device.getRo_build_fingerprint());
         }
 
         return line;

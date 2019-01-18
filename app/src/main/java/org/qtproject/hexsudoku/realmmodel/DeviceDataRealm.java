@@ -8,7 +8,7 @@ public class DeviceDataRealm extends RealmObject {
     private long id;
 
     private String name;
-    private String ro_build_version_sdk;
+    private int ro_build_version_sdk;
     private String ro_build_version_release;
     private String ro_build_id;
     private String ro_build_display_id;
@@ -42,7 +42,7 @@ public class DeviceDataRealm extends RealmObject {
         return name;
     }
 
-    public String getRo_build_version_sdk() {
+    public int getRo_build_version_sdk() {
         return ro_build_version_sdk;
     }
 
@@ -137,7 +137,7 @@ public class DeviceDataRealm extends RealmObject {
         this.name = name;
     }
 
-    public void setRo_build_version_sdk(String ro_build_version_sdk) {
+    public void setRo_build_version_sdk(int ro_build_version_sdk) {
         this.ro_build_version_sdk = ro_build_version_sdk;
     }
 

@@ -38,10 +38,10 @@ class ClickHelper {
                     }
                 }
             } else {
-                Log.d(TAG, "Debug File: Storage not writable");
+                Log.e(TAG, "Debug File: Storage not writable");
             }
         } catch (Exception e) {
-            Log.d(TAG, "Exception", e);
+            Log.e(TAG, "Exception", e);
         }
     }
 

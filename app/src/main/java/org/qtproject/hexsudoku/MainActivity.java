@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             Runtime.getRuntime().exec(new String[] {"su", "-c", "input keyevent 4"});
 
-                            Log.e(TAG, "START adb shell keyevent clickBack");
+                            Log.i(TAG, "START adb shell keyevent clickBack");
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
                         }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
 //                    Runtime.getRuntime().exec("input tap 800 830");
-                    Log.e(TAG, "START adb shell TAP");
+                    Log.i(TAG, "START adb shell TAP");
 
                     backFocusInApp(5000);
                 } catch (Exception e) {
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (!isInApp) {
-                    Log.e(TAG, "backFocusInApp() NOT in App ");
+                    Log.i(TAG, "backFocusInApp() NOT in App ");
                     clickBack(500);
                     backFocusInApp(4000);
                 } else {
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickChengeBuildProp(View view) {
-        deviceHelper.chengeBuildProp();
+        deviceHelper.chengeBuildPropFile();
     }
     //*************************************
 
