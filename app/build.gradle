@@ -71,6 +71,11 @@ dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
 
     implementation 'com.google.firebase:firebase-perf:16.2.3'
+
+
+
+    implementation 'io.realm:realm-android:0.87.2'
+    annotationProcessor 'io.realm:realm-android:0.87.2'
 }
 fileTree(dir: 'libs', include: '*.aar').each { File file ->
     dependencies.add("implementation", [name: file.name.replaceFirst(~/\.[^\.]+$/, ''), ext: 'aar'])

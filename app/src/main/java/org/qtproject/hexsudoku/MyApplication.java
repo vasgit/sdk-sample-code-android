@@ -6,6 +6,14 @@ import android.support.multidex.MultiDexApplication;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 public class MyApplication extends MultiDexApplication {
 
 
@@ -15,11 +23,34 @@ public class MyApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+
+//        copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm), "default.realm");
+
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        Realm.setDefaultConfiguration(config);
     }
 
+    private void copyBundledRealmFile(InputStream inputStream, String outFileName) {
+        try {
+            File file = new File(this.getFilesDir(), outFileName);
+            FileOutputStream outputStream = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buf)) > 0) {
+                outputStream.write(buf, 0, bytesRead);
+            }
+            outputStream.close();
+            file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
-     * Gets the default {@link Tracker} for this {@link Application}.
+     * Gets the default_realm {@link Tracker} for this {@link Application}.
      *
      * @return tracker
      */
