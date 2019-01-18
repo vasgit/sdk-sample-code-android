@@ -204,7 +204,6 @@ public class FillRealmData {
 
                             } else if (line.contains(AppConstants.ro_build_fingerprint + "=")) {
                                 deviceData.setRo_build_fingerprint(line.replace(AppConstants.ro_build_fingerprint + "=", ""));
-
                             }
                         }
                     } finally {

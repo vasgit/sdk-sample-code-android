@@ -9,7 +9,6 @@ public class AppConstants {
 
     public static int READ_EXTERNAL_STORAGE_PERMISSION_CODE = 10;
 
-
     public static String ro_build_version_sdk = "ro.build.version.sdk";
     public static String ro_build_version_release = "ro.build.version.release";
     public static String ro_build_id = "ro.build.id";
@@ -30,9 +29,5 @@ public class AppConstants {
     public static String ro_product_locale_region = "ro.product.locale.region";
     public static String ro_build_description = "ro.build.description";
     public static String ro_build_fingerprint = "ro.build.fingerprint";
-
-
-
-
 
 }

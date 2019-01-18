@@ -27,6 +27,8 @@ public class DeviceDataRealm extends RealmObject {
     private String ro_product_locale_language;
     private String ro_product_locale_region;
     private String ro_build_description;
+
+    //todo: я сам добавив, хз може нах нада
     private String ro_build_fingerprint;
 
     public DeviceDataRealm() {

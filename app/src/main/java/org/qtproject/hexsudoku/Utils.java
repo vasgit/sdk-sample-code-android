@@ -6,7 +6,12 @@ import android.util.Log;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-class Utils {
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class Utils {
 
     private static String TAG = Utils.class.getName();
     private Activity activity;
@@ -33,5 +38,19 @@ class Utils {
         }
     }
 
+    public static void copyBundledRealmFile(InputStream inputStream, String outFileName, File tempAppDir) {
+        try {
+            File file = new File(tempAppDir, outFileName);
+            FileOutputStream outputStream = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buf)) > 0) {
+                outputStream.write(buf, 0, bytesRead);
+            }
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
