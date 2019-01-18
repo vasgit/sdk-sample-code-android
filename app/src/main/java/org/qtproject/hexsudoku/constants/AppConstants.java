@@ -26,13 +26,10 @@ public class AppConstants {
     public static String ro_product_device = "ro.product.device";
     public static String ro_product_board = "ro.product.board";
     public static String ro_product_manufacturer = "ro.product.manufacturer";
-    public static String ro_build_tags = "ro.build.tags";
     public static String ro_product_locale_language = "ro.product.locale.language";
     public static String ro_product_locale_region = "ro.product.locale.region";
     public static String ro_build_description = "ro.build.description";
     public static String ro_build_fingerprint = "ro.build.fingerprint";
-    public static String ro_opengles_version = "ro.opengles.version";
-    public static String ro_carrier = "ro.carrier";
 
 
 

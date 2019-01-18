@@ -24,13 +24,10 @@ public class DeviceDataRealm extends RealmObject {
     private String ro_product_device;
     private String ro_product_board;
     private String ro_product_manufacturer;
-    private String ro_build_tags;
     private String ro_product_locale_language;
     private String ro_product_locale_region;
     private String ro_build_description;
     private String ro_build_fingerprint;
-    private String ro_opengles_version;
-    private String ro_carrier;
 
     public DeviceDataRealm() {
     }
@@ -107,10 +104,6 @@ public class DeviceDataRealm extends RealmObject {
         return ro_product_manufacturer;
     }
 
-    public String getRo_build_tags() {
-        return ro_build_tags;
-    }
-
     public String getRo_product_locale_language() {
         return ro_product_locale_language;
     }
@@ -127,13 +120,7 @@ public class DeviceDataRealm extends RealmObject {
         return ro_build_fingerprint;
     }
 
-    public String getRo_opengles_version() {
-        return ro_opengles_version;
-    }
 
-    public String getRo_carrier() {
-        return ro_carrier;
-    }
 
 
 
@@ -212,10 +199,6 @@ public class DeviceDataRealm extends RealmObject {
         this.ro_product_manufacturer = ro_product_manufacturer;
     }
 
-    public void setRo_build_tags(String ro_build_tags) {
-        this.ro_build_tags = ro_build_tags;
-    }
-
     public void setRo_product_locale_language(String ro_product_locale_language) {
         this.ro_product_locale_language = ro_product_locale_language;
     }
@@ -232,11 +215,4 @@ public class DeviceDataRealm extends RealmObject {
         this.ro_build_fingerprint = ro_build_fingerprint;
     }
 
-    public void setRo_opengles_version(String ro_opengles_version) {
-        this.ro_opengles_version = ro_opengles_version;
-    }
-
-    public void setRo_carrier(String ro_carrier) {
-        this.ro_carrier = ro_carrier;
-    }
 }

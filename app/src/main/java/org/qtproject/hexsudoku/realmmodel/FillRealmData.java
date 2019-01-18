@@ -24,9 +24,10 @@ public class FillRealmData {
     }
 
     public void fill() {
-        fillDevaceData();
-        fillUsers();
+//        fillDevaceData();
         fillFromFiles();
+        fillUsers();
+
     }
 
     private void addDevaceToRealm(final DeviceDataRealm devaceData) {
@@ -111,8 +112,6 @@ public class FillRealmData {
         deviceData.setRo_product_board("MSM8974");
         //ro.product.manufacturer
         deviceData.setRo_product_manufacturer("samsung");
-        //ro.build.tags
-        deviceData.setRo_build_tags("release-keys");
         //ro.product.locale.language
         deviceData.setRo_product_locale_language("en");
         //ro.product.locale.region
@@ -121,10 +120,6 @@ public class FillRealmData {
         deviceData.setRo_build_description("klteuc-user 5.1.1 LMY47X G900AUCU4CPA1 release-keys");
         //ro.build.fingerprint
         deviceData.setRo_build_fingerprint("samsung/klteuc/klteatt:5.1.1/LMY47X/G900AUCU4CPA1:user/release-keys");
-        //ro.opengles.version
-        deviceData.setRo_opengles_version("196608");
-        //ro.carrier
-        deviceData.setRo_carrier("unknown");
 
         addDevaceToRealm(deviceData);
 
@@ -198,9 +193,6 @@ public class FillRealmData {
                             } else if (line.contains(AppConstants.ro_product_manufacturer + "=")) {
                                 deviceData.setRo_product_manufacturer(line.replace(AppConstants.ro_product_manufacturer + "=", ""));
 
-                            } else if (line.contains(AppConstants.ro_build_tags + "=")) {
-                                deviceData.setRo_build_tags(line.replace(AppConstants.ro_build_tags + "=", ""));
-
                             } else if (line.contains(AppConstants.ro_product_locale_language + "=")) {
                                 deviceData.setRo_product_locale_language(line.replace(AppConstants.ro_product_locale_language + "=", ""));
 
@@ -213,11 +205,6 @@ public class FillRealmData {
                             } else if (line.contains(AppConstants.ro_build_fingerprint + "=")) {
                                 deviceData.setRo_build_fingerprint(line.replace(AppConstants.ro_build_fingerprint + "=", ""));
 
-                            } else if (line.contains(AppConstants.ro_opengles_version + "=")) {
-                                deviceData.setRo_opengles_version(line.replace(AppConstants.ro_opengles_version + "=", ""));
-
-                            } else if (line.contains(AppConstants.ro_carrier + "=")) {
-                                deviceData.setRo_carrier(line.replace(AppConstants.ro_carrier + "=", ""));
                             }
                         }
                     } finally {
@@ -228,7 +215,6 @@ public class FillRealmData {
                         }
                     }
 
-                    Log.e(TAG, "deviceData:" + deviceData.toString());
                     addDevaceToRealm(deviceData);
                     idForDevaceData++;
                 } catch (Exception e) {
