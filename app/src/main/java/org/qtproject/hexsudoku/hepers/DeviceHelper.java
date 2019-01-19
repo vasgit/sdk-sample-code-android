@@ -112,6 +112,8 @@ public class DeviceHelper {
             return;
         }
 
+        Log.i(TAG, "device: " + device.getName());
+
         Utils.copyBundledRealmFile(activity.getResources().openRawResource(R.raw.build_prop),
                 "build_in.prop",
                 activity.getFilesDir());
@@ -143,21 +145,25 @@ public class DeviceHelper {
                 final String fileAbsolutePath = outFile.getAbsolutePath();
                 Log.i(TAG, "fileAbsolutePath: " + fileAbsolutePath);
 
-//                activity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mv " + fileAbsolutePath + " /system/build.prop"});
-//
-//                            Log.d(TAG, "mv is OK");
-////                            /data/data/org.qtproject.hexsudoku/build.prop
-////                            adb shell mv /data/data/org.qtproject.hexsudoku/build.prop /system/build.prop
-//
-//                        } catch (Exception e) {
-//                            Log.e(TAG, e.toString());
-//                        }
-//                    }
-//                });
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /system"});
+                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mv " + fileAbsolutePath + " /system/build.prop"});
+//                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o ro,remount /system"});
+//                            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
+
+                            Log.d(TAG, "mv is OK");
+//                            /data/data/org.qtproject.hexsudoku/build.prop
+//                            adb shell mv /data/data/org.qtproject.hexsudoku/build.prop /system/build.prop
+
+
+                        } catch (Exception e) {
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                });
 
             } catch (Exception e) {
                 Log.e(TAG, "Exception", e);
