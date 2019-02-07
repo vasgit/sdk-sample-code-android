@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
 import org.qtproject.hexsudoku.hepers.DeviceHelper;
@@ -43,8 +44,6 @@ public class StartActivity extends AppCompatActivity  {
         // adb shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'
 
 
-
-
 //        Simply remount as rw (Read/Write):
 //        # mount -o rw,remount /system
 
@@ -69,5 +68,17 @@ public class StartActivity extends AppCompatActivity  {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, AppConstants.READ_EXTERNAL_STORAGE_PERMISSION_CODE);
             }
         }
+
+        //set params for /system/build.prop and read /system
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /system"});
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        });
     }
 }
