@@ -111,6 +111,34 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRoot"
+            android:textAllCaps="false"
+            android:text="onRoot"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="offRoot"
+            android:textAllCaps="false"
+            android:text="offRoot"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="checkRoot"
+            android:textAllCaps="false"
+            android:text="checkRoot"/>
+
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_below="@+id/ttt2"

@@ -12,7 +12,6 @@ import android.util.Log;
 import org.qtproject.hexsudoku.constants.AppConstants;
 import org.qtproject.hexsudoku.hepers.DeviceHelper;
 import org.qtproject.hexsudoku.hepers.RootHelper;
-import org.qtproject.hexsudoku.realmmodel.FillRealmData;
 
 public class StartActivity extends AppCompatActivity  {
 
@@ -32,7 +31,6 @@ public class StartActivity extends AppCompatActivity  {
         rootHelper = new RootHelper(this);
         deviceHelper = new DeviceHelper(this);
 
-        rootHelper.renamaRootFiles();
 
 
         deviceHelper.chengeGenymotionData();
@@ -75,8 +73,13 @@ public class StartActivity extends AppCompatActivity  {
             public void run() {
                 try {
                     Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /system"});
-                } catch (Exception e) {
-                    Log.e(TAG, e.toString());
+                } catch (Exception e1) {
+                    Log.e(TAG, e1.toString());
+                }
+                try {
+                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /system"});
+                } catch (Exception e2) {
+                    Log.e(TAG, e2.toString());
                 }
             }
         });

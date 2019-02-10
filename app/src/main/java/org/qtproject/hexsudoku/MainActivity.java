@@ -21,6 +21,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
 import org.qtproject.hexsudoku.hepers.DeviceHelper;
+import org.qtproject.hexsudoku.hepers.RootHelper;
 
 import io.fabric.sdk.android.Fabric;
 import java.util.List;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private NativeAdViewNewsFeed nav_nf;
 
     private DeviceHelper deviceHelper;
+    private RootHelper rootHelper;
 
 
     @Override
@@ -51,8 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         utils = new Utils(this);
         deviceHelper = new DeviceHelper(this);
+        rootHelper = new RootHelper(this);
 
         initAppodealSdk();
+
     }
 
     @Override
@@ -81,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            Runtime.getRuntime().exec(new String[] {"su", "-c", "input keyevent 4"});
+                            Runtime.getRuntime().exec(new String[] {AppConstants.NAME_SU, "-c", "input keyevent 4"});
 
                             Log.i(TAG, "START adb shell keyevent clickBack");
                         } catch (Exception e) {
@@ -180,6 +184,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickChengeBuildProp(View view) {
         deviceHelper.chengeBuildPropFile();
+    }
+
+
+    public void onRoot(View view) {
+        rootHelper.onRoot();
+    }
+
+    public void offRoot(View view) {
+        rootHelper.offRoot();
+    }
+
+    public void checkRoot(View view) {
+        rootHelper.checkRoot();
     }
     //*************************************
 
@@ -395,6 +412,8 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
+
     //*************************************
 }
 

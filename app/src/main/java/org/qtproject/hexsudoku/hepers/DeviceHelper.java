@@ -45,6 +45,9 @@ public class DeviceHelper {
         getAndroidDeviseID();
         Log.d(TAG, "start change AndroidDeviseID");
 //        genymotion.getId().setRandomAndroidId();
+
+//        genymotion.getId().setAndroidId();
+
         getAndroidDeviseID();
     }
 
@@ -88,7 +91,7 @@ public class DeviceHelper {
                 if (needChecngeAdID) {
                     Log.d(TAG, "start change GoogleAdvertisingID");
                     try {
-                        Runtime.getRuntime().exec(new String[]{"su", "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
+                        Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
                     } catch (Exception e) {
                         Log.e(TAG, "Exception", e);
                     }
@@ -152,8 +155,8 @@ public class DeviceHelper {
                     @Override
                     public void run() {
                         try {
-                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /system"});
-                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mv " + fileAbsolutePath + " /system/build.prop"});
+                            Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /system"});
+                            Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mv " + fileAbsolutePath + " /system/build.prop"});
 //                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o ro,remount /system"});
 //                            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
 

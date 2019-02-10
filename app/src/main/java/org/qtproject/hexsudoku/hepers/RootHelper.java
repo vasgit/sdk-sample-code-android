@@ -2,106 +2,320 @@ package org.qtproject.hexsudoku.hepers;
 
 import android.app.Activity;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import org.qtproject.hexsudoku.constants.AppConstants;
+
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.FileWriter;
 
 public class RootHelper {
 
     private static String TAG = RootHelper.class.getName();
+
     private Activity activity;
 
     public RootHelper(Activity activity) {
         this.activity = activity;
     }
 
-    public void renamaRootFiles() {
-        //        "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su", "/system/bin/failsafe/su", "/data/local/su"
+    private String[] paths = {"/system/app/Superuser.apk", "/sbin/su",
+            "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
+            "/system/bin/failsafe/su", "/data/local/su"};
 
-        String[] paths = {"/system/app/Superuser.apk", "/sbin/su",
-                "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
-                "/system/bin/failsafe/su", "/data/local/su"};
+    public void offRoot() {
 
-        String root = Environment.getExternalStorageDirectory().toString();
+        for (final String s: paths) {
 
-        for (String s: paths) {
+            File from = new File(s);
+            File to = new File(s + "_");
 
-            File fdelete = new File(s);
-            File fdeleteTo = new File(s + "1");
+            if (from.exists()) {
+                Log.d(TAG, "from.exists: " + from);
 
-//            File fdeleteTo = new File("/system/xbin", "su1");
+//                try {
+//
+//                    if (from.renameTo(to)) {
+//                        Log.d(TAG, "file renamed: "  + from);
+//                    } else {
+//                    } else {
+//                        Log.d(TAG, "file NOT renamed: " + from);
+//                    }
+//                    Log.e(TAG, "  ");
+//
+//                } catch (Exception e) {
+//                    Log.e(TAG, e.toString());
+//                }
+
+                final String fileAbsolutePath = from.getAbsolutePath();
+                Log.i(TAG, "fileAbsolutePath: " + fileAbsolutePath);
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /system"});
+                        } catch (Exception e1) {
+                            Log.e(TAG, e1.toString());
+                        }
+                    }
+                });
+
+                Handler uiHandler1 = new Handler(Looper.getMainLooper());
+                uiHandler1.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "cp " + fileAbsolutePath + " " + fileAbsolutePath + AppConstants.addTextToRoot});
+                                } catch (Exception e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            }
+                        });
+                    }
+                }, 500);
+
+                Handler uiHandler2 = new Handler(Looper.getMainLooper());
+                uiHandler2.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f " + fileAbsolutePath});
+                                } catch (Exception e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            }
+                        });
+                    }
+                }, 3000);
 
 
 
-            if (fdelete.exists()) {
-                Log.d(TAG, "fdelete.exists: " + fdelete);
+            } else {
+                Log.e(TAG, "from NOT exists: " + from);
+            }
+        }
+
+        Log.d(TAG, "------------");
+
+//        renameRootFile("", "_");
+    }
+
+    public void onRoot() {
+//        createScriptFile();
+
+        for (final String s: paths) {
+
+            File from = new File(s + AppConstants.addTextToRoot);
+            File to = new File(s);
+
+            if (from.exists()) {
+                Log.d(TAG, "from.exists: " + from);
 
                 try {
 
-                    if (fdelete.renameTo(fdeleteTo)) {
-                        Log.d(TAG, "file Deleted: "  + fdelete);
-                    } else {
-                        Log.d(TAG, "file not Deleted: " + fdelete);
-                    }
+//                    if (from.renameTo(to)) {
+//                        Log.d(TAG, "file Renamed: "  + from);
+//                    } else {
+//                        Log.d(TAG, "file NOT Renamed: " + from);
+//                    }
+
+                    final String fileAbsolutePath = from.getAbsolutePath();
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+
+                                String sss = "cd " + Environment.getExternalStorageDirectory();
+//                                Log.d(TAG, "sss: " + sss);
+//                                Runtime.getRuntime().exec(sss);
+
+
+//                                Runtime.getRuntime().exec(new String[]{"adb shell /system/bin/su_"});
+
+                                Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /system"});
+
+
+
+                                Handler uiHandler1 = new Handler(Looper.getMainLooper());
+                                uiHandler1.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "cp " + fileAbsolutePath + " " + fileAbsolutePath.replace(AppConstants.addTextToRoot, "")});
+                                                } catch (Exception e) {
+                                                    Log.e(TAG, e.toString());
+                                                }
+                                            }
+                                        });
+                                    }
+                                }, 500);
+
+                                Handler uiHandler2 = new Handler(Looper.getMainLooper());
+                                uiHandler2.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f " + fileAbsolutePath});
+                                                } catch (Exception e) {
+                                                    Log.e(TAG, e.toString());
+                                                }
+                                            }
+                                        });
+                                    }
+                                }, 3000);
+
+
+
+
+
+//                                Runtime.getRuntime().exec(new String[]{"su", "-c", "rm -f " + fileAbsolutePath});
+
+
+//                            Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o ro,remount /system"});
+//                            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
+
+
+                                Log.d(TAG, "mu ok");
+
+                            } catch (Exception e) {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    });
+
+                    Log.e(TAG, "  ");
 
                 } catch (Exception e) {
                     Log.e(TAG, e.toString());
                 }
-
-
-
-
-//                try {
-//                    BufferedWriter output = new BufferedWriter(new FileWriter(fdeleteTo));
-//                    output.close();
-//                } catch (Exception e) {
-//                    Log.e(TAG, e.toString());
-//                }
-//
-//
-//                try {
-//                    copy(fdelete, fdeleteTo);
-//                } catch (IOException e) {
-//
-//                    Log.e(TAG, e.toString());
-//                }
-
-
             } else {
-
-
-                Log.e(TAG, "fdelete NOT exists: " + fdelete);
+                Log.e(TAG, "from NOT exists: " + from);
             }
         }
+
+        Log.d(TAG, "------------");
+
+
+
+//        renameRootFile("_", "");
     }
 
-    public static void copy(File src, File dst) throws IOException {
-        InputStream in = new FileInputStream(src);
+
+    private void createScriptFile() {
         try {
-            OutputStream out = new FileOutputStream(dst);
-            try {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
+            if (isExternalStorageWritable()) {
+                File debugFile = new File(Environment.getExternalStorageDirectory(), BACK_SCRIPT);
+                BufferedWriter output = new BufferedWriter(new FileWriter(debugFile));
+
+                try {
+                    output.write("su_ -c");
+                    output.write("cp /system/xbin/su_ /system/xbin/su");
+
+                } finally {
+                    try {
+                        output.close();
+                        Log.d(TAG, "createScriptFile: ok");
+                        Log.d(TAG, "Environment.getExternalStorageDirectory(): " + Environment.getExternalStorageDirectory());
+                    } catch (Exception e) {
+                        Log.e(TAG, "e:" + e.toString());
+                    }
                 }
-            } finally {
-                out.close();
+            } else {
+                Log.d(TAG, "Debug File: Storage not writable");
             }
-        } finally {
-            in.close();
+        } catch (Exception e) {
+            Log.d(TAG, "Exception", e);
+        }
+    }
+
+    private static boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+
+    public void checkRoot() {
+        Log.d(TAG, " ");
+        for (final String s: paths) {
+            final File file1 = new File(s);
+            final File file2 = new File(s + AppConstants.addTextToRoot);
+
+            if (file1.exists()) {
+                Log.e(TAG, "exists: " + file1);
+            } else {
+                Log.d(TAG, "NOT exists: " + file1);
+            }
+
+            if (file2.exists()) {
+                Log.e(TAG, "exists: " + file2);
+            } else {
+                Log.d(TAG, "NOT exists: " + file2);
+            }
+
         }
     }
 
 
 
+    private static final String BACK_SCRIPT = "backScript.sh";
 
+    private void renameRootFile(String addToFile1, final String addToFile2) {
+
+        Log.d(TAG, " ");
+        for (final String s: paths) {
+            final File from = new File(s + addToFile1);
+            if (from.exists()) {
+                Log.d(TAG, "from.exists: " + from);
+                try {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mv " + from.getAbsolutePath() + " " + s + addToFile2});
+                            } catch (Exception e) {
+                                Log.e(TAG, e.toString());
+                            }
+                        }
+                    });
+
+                    Handler uiHandler = new Handler(Looper.getMainLooper());
+                    uiHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (from.exists()) {
+                                Log.d(TAG, "file NOT renamed: " + from);
+                            } else {
+                                Log.d(TAG, "file renamed: " + from + " to " + s + addToFile2);
+                            }
+                        }
+                    }, 200);
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+            } else {
+                Log.e(TAG, "from NOT exists: " + from);
+            }
+        }
+
+        Log.d(TAG, "------------");
+    }
 
 
 }

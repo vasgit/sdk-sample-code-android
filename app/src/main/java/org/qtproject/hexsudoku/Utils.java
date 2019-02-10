@@ -6,6 +6,8 @@ import android.util.Log;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import org.qtproject.hexsudoku.constants.AppConstants;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class Utils {
 
     void rebootPhone() {
         try {
-            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
+            Process proc = Runtime.getRuntime().exec(new String[] {AppConstants.NAME_SU, "-c", "reboot" });
             proc.waitFor();
         } catch (Exception ex) {
             Log.i(TAG, "Could not reboot: ", ex);

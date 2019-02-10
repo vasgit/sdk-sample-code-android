@@ -30,4 +30,9 @@ public class AppConstants {
     public static String ro_build_description = "ro.build.description";
     public static String ro_build_fingerprint = "ro.build.fingerprint";
 
+
+
+
+    public static String addTextToRoot = "net";
+    public static String NAME_SU = "mu";
 }
