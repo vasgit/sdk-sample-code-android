@@ -31,8 +31,14 @@ public class AppConstants {
     public static String ro_build_fingerprint = "ro.build.fingerprint";
 
 
-
-
     public static String addTextToRoot = "net";
+
     public static String NAME_SU = "mu";
+
+    public static String TOTAL_TAG = "clickclick";
+
+
+    public static String[] suPaths = {"/system/app/Superuser.apk", "/sbin/su",
+            "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
+            "/system/bin/failsafe/su", "/data/local/su"};
 }

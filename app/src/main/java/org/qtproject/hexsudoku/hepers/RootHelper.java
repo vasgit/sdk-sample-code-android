@@ -11,28 +11,23 @@ import java.io.File;
 
 public class RootHelper {
 
-    private static String TAG = RootHelper.class.getName();
-
     private Activity activity;
 
     public RootHelper(Activity activity) {
         this.activity = activity;
     }
 
-    private String[] paths = {"/system/app/Superuser.apk", "/sbin/su",
-            "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
-            "/system/bin/failsafe/su", "/data/local/su"};
 
     public void offRoot() {
 
-        for (final String s: paths) {
+        for (final String s: AppConstants.suPaths) {
 
             File from = new File(s);
             if (from.exists()) {
-                Log.d(TAG, "from.exists: " + from);
+                Log.d(AppConstants.TOTAL_TAG, "from.exists: " + from);
 
                 final String fileAbsolutePath = from.getAbsolutePath();
-                Log.i(TAG, "fileAbsolutePath: " + fileAbsolutePath);
+                Log.i(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -40,7 +35,7 @@ public class RootHelper {
                         try {
                             Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /system"});
                         } catch (Exception e1) {
-                            Log.e(TAG, e1.toString());
+                            Log.e(AppConstants.TOTAL_TAG, e1.toString());
                         }
                     }
                 });
@@ -55,7 +50,7 @@ public class RootHelper {
                                 try {
                                     Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "cp " + fileAbsolutePath + " " + fileAbsolutePath + AppConstants.addTextToRoot});
                                 } catch (Exception e) {
-                                    Log.e(TAG, e.toString());
+                                    Log.e(AppConstants.TOTAL_TAG, e.toString());
                                 }
                             }
                         });
@@ -72,7 +67,7 @@ public class RootHelper {
                                 try {
                                     Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f " + fileAbsolutePath});
                                 } catch (Exception e) {
-                                    Log.e(TAG, e.toString());
+                                    Log.e(AppConstants.TOTAL_TAG, e.toString());
                                 }
                             }
                         });
@@ -80,18 +75,18 @@ public class RootHelper {
                 }, 3000);
 
             } else {
-                Log.e(TAG, "from NOT exists: " + from);
+                Log.e(AppConstants.TOTAL_TAG, "from NOT exists: " + from);
             }
         }
 
-        Log.d(TAG, "------------");
+        Log.d(AppConstants.TOTAL_TAG, "------------");
     }
 
     public void onRoot() {
-        for (final String s: paths) {
+        for (final String s: AppConstants.suPaths) {
             File from = new File(s + AppConstants.addTextToRoot);
             if (from.exists()) {
-                Log.d(TAG, "from.exists: " + from);
+                Log.d(AppConstants.TOTAL_TAG, "from.exists: " + from);
                 try {
 
                     final String fileAbsolutePath = from.getAbsolutePath();
@@ -111,7 +106,7 @@ public class RootHelper {
                                                 try {
                                                     Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "cp " + fileAbsolutePath + " " + fileAbsolutePath.replace(AppConstants.addTextToRoot, "")});
                                                 } catch (Exception e) {
-                                                    Log.e(TAG, e.toString());
+                                                    Log.e(AppConstants.TOTAL_TAG, e.toString());
                                                 }
                                             }
                                         });
@@ -128,54 +123,94 @@ public class RootHelper {
                                                 try {
                                                     Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f " + fileAbsolutePath});
                                                 } catch (Exception e) {
-                                                    Log.e(TAG, e.toString());
+                                                    Log.e(AppConstants.TOTAL_TAG, e.toString());
                                                 }
                                             }
                                         });
                                     }
                                 }, 3000);
 
-                                Log.d(TAG, "mu ok");
+                                Log.d(AppConstants.TOTAL_TAG, "mu ok");
                             } catch (Exception e) {
-                                Log.e(TAG, e.toString());
+                                Log.e(AppConstants.TOTAL_TAG, e.toString());
                             }
                         }
                     });
 
-                    Log.e(TAG, "  ");
+                    Log.e(AppConstants.TOTAL_TAG, "  ");
 
                 } catch (Exception e) {
-                    Log.e(TAG, e.toString());
+                    Log.e(AppConstants.TOTAL_TAG, e.toString());
                 }
             } else {
-                Log.e(TAG, "from NOT exists: " + from);
+                Log.e(AppConstants.TOTAL_TAG, "from NOT exists: " + from);
             }
         }
 
-        Log.d(TAG, "------------");
+        Log.d(AppConstants.TOTAL_TAG, "------------");
 
 
     }
 
     public void checkRoot() {
-        Log.d(TAG, " ");
-        for (final String s: paths) {
+        Log.d(AppConstants.TOTAL_TAG, " ");
+        for (final String s: AppConstants.suPaths) {
             final File file1 = new File(s);
             final File file2 = new File(s + AppConstants.addTextToRoot);
 
             if (file1.exists()) {
-                Log.e(TAG, "exists: " + file1);
+                Log.e(AppConstants.TOTAL_TAG, "exists: " + file1);
             } else {
-                Log.d(TAG, "NOT exists: " + file1);
+                Log.d(AppConstants.TOTAL_TAG, "NOT exists: " + file1);
             }
 
             if (file2.exists()) {
-                Log.e(TAG, "exists: " + file2);
+                Log.e(AppConstants.TOTAL_TAG, "exists: " + file2);
             } else {
-                Log.d(TAG, "NOT exists: " + file2);
+                Log.d(AppConstants.TOTAL_TAG, "NOT exists: " + file2);
             }
 
         }
     }
 
+    public void copySuToMu_DeleteSuRoot() {
+
+//        /system/bin/su
+//        /system/xbin/su
+
+        final File bin_su = new File("/system/bin/su");
+        final File xbin_su = new File("/system/xbin/su");
+        final File bin_Mu = new File("/system/bin/mu");
+        final File xbin_Mu = new File("/system/xbin/mu");
+
+        //todo try copy su to mu programly
+//        if (!bin_Mu.exists() && bin_su.exists() ) {
+//            activity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        Runtime.getRuntime().exec(new String[]{"su", "-c", "cp " + bin_su.getAbsolutePath() + " " + bin_Mu.getAbsolutePath()});
+//                    } catch (Exception e) {
+//                        Log.e(AppConstants.TOTAL_TAG, e.toString());
+//                    }
+//                }
+//            });
+//        }
+//        if (!xbin_Mu.exists() && xbin_su.exists()) {
+//            activity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        Runtime.getRuntime().exec(new String[]{"su", "-c", "cp " + xbin_su.getAbsolutePath() + " " + xbin_Mu.getAbsolutePath()});
+//                    } catch (Exception e) {
+//                        Log.e(AppConstants.TOTAL_TAG, e.toString());
+//                    }
+//                }
+//            });
+//        }
+
+        if (bin_su.exists() && xbin_su.exists()) {
+            offRoot();
+        }
+    }
 }

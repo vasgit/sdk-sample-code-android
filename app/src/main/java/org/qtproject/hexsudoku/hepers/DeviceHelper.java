@@ -31,7 +31,6 @@ import io.realm.RealmResults;
 
 public class DeviceHelper {
 
-    private static String TAG = DeviceHelper.class.getName();
     private Activity activity;
 
     public DeviceHelper(Activity activity) {
@@ -43,7 +42,7 @@ public class DeviceHelper {
 //        genymotion.getBattery().setLevel(50);
 
         getAndroidDeviseID();
-        Log.d(TAG, "start change AndroidDeviseID");
+        Log.d(AppConstants.TOTAL_TAG, "start change AndroidDeviseID");
 //        genymotion.getId().setRandomAndroidId();
 
 //        genymotion.getId().setAndroidId();
@@ -57,9 +56,9 @@ public class DeviceHelper {
         try {
             androidDeviseID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
         } catch (Exception e) {
-            Log.e(TAG, e.toString());
+            Log.e(AppConstants.TOTAL_TAG, e.toString());
         }
-        Log.i(TAG, "androidDeviseID: " + androidDeviseID);
+        Log.i(AppConstants.TOTAL_TAG, "androidDeviseID: " + androidDeviseID);
     }
 
     public void checngeGoogleAdvertisingID(final boolean needChecngeAdID) {
@@ -86,14 +85,14 @@ public class DeviceHelper {
 
             @Override
             protected void onPostExecute(String advertId) {
-                Log.i(TAG, "GoogleAdvertisingID: " + advertId);
+                Log.i(AppConstants.TOTAL_TAG, "GoogleAdvertisingID: " + advertId);
 
                 if (needChecngeAdID) {
-                    Log.d(TAG, "start change GoogleAdvertisingID");
+                    Log.d(AppConstants.TOTAL_TAG, "start change GoogleAdvertisingID");
                     try {
                         Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
                     } catch (Exception e) {
-                        Log.e(TAG, "Exception", e);
+                        Log.e(AppConstants.TOTAL_TAG, "Exception", e);
                     }
                     checngeGoogleAdvertisingID(false);
                 }
@@ -118,7 +117,7 @@ public class DeviceHelper {
             return;
         }
 
-        Log.i(TAG, "device: " + device.getName());
+        Log.i(AppConstants.TOTAL_TAG, "device: " + device.getName());
 
         Utils.copyBundledRealmFile(activity.getResources().openRawResource(R.raw.build_prop),
                 "build_in.prop",
@@ -144,12 +143,12 @@ public class DeviceHelper {
                         brOutFile.close();
                         brInFile.close();
                     } catch (Exception e) {
-                        Log.e(TAG, "e:" + e.toString());
+                        Log.e(AppConstants.TOTAL_TAG, "e:" + e.toString());
                     }
                 }
 
                 final String fileAbsolutePath = outFile.getAbsolutePath();
-                Log.i(TAG, "fileAbsolutePath: " + fileAbsolutePath);
+                Log.i(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -170,16 +169,16 @@ public class DeviceHelper {
 
 
                         } catch (Exception e) {
-                            Log.e(TAG, e.toString());
+                            Log.e(AppConstants.TOTAL_TAG, e.toString());
                         }
                     }
                 });
 
             } catch (Exception e) {
-                Log.e(TAG, "Exception", e);
+                Log.e(AppConstants.TOTAL_TAG, "Exception", e);
             }
         } else {
-            Log.e(TAG, "inFile NOT exists");
+            Log.e(AppConstants.TOTAL_TAG, "inFile NOT exists");
         }
     }
 
@@ -209,11 +208,11 @@ public class DeviceHelper {
                     try {
                         brInFile.close();
                     } catch (Exception e) {
-                        Log.e(TAG, "e:" + e.toString());
+                        Log.e(AppConstants.TOTAL_TAG, "e:" + e.toString());
                     }
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Exception", e);
+                Log.e(AppConstants.TOTAL_TAG, "Exception", e);
             }
         }
 

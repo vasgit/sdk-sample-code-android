@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.os.Environment;
 import android.util.Log;
 
+import org.qtproject.hexsudoku.constants.AppConstants;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
 class ClickHelper {
 
-    private static String TAG = ClickHelper.class.getName();
     private Activity activity;
 
     private static final String BACK_SCRIPT = "backScript.sh";
@@ -26,22 +27,22 @@ class ClickHelper {
                 BufferedWriter output = new BufferedWriter(new FileWriter(debugFile));
 
                 try {
-                    output.write("input keyevent 4");
+                    Log.d(AppConstants.TOTAL_TAG, "input keyevent 4");
 
                 } finally {
                     try {
                         output.close();
-                        Log.d(TAG, "createScriptFile: ok");
-                        Log.d(TAG, "Environment.getExternalStorageDirectory(): " + Environment.getExternalStorageDirectory());
+                        Log.d(AppConstants.TOTAL_TAG, "createScriptFile: ok");
+                        Log.d(AppConstants.TOTAL_TAG, "Environment.getExternalStorageDirectory(): " + Environment.getExternalStorageDirectory());
                     } catch (Exception e) {
-                        Log.e(TAG, "e:" + e.toString());
+                        Log.e(AppConstants.TOTAL_TAG, "e:" + e.toString());
                     }
                 }
             } else {
-                Log.e(TAG, "Debug File: Storage not writable");
+                Log.e(AppConstants.TOTAL_TAG, "Debug File: Storage not writable");
             }
         } catch (Exception e) {
-            Log.e(TAG, "Exception", e);
+            Log.e(AppConstants.TOTAL_TAG, "Exception", e);
         }
     }
 
