@@ -97,19 +97,6 @@
     </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClickChengeBuildProp"
-            android:textAllCaps="false"
-            android:text="chengeBuildProp"/>
-
-
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -137,6 +124,26 @@
             android:text="checkRoot"/>
 
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onCreateUsers"
+            android:textAllCaps="false"
+            android:text="onCreateUsers"/>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onCangeUser"
+            android:textAllCaps="false"
+            android:text="onCangeUser"/>
     </LinearLayout>
 
 

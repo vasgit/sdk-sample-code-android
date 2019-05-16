@@ -6,10 +6,17 @@ import io.realm.annotations.PrimaryKey;
 public class UserRealm extends RealmObject {
     @PrimaryKey
     private int id;
-
     private String android_id;
+    private String advertising_id;
+    private String IMEI_id;
+
 
     private DeviceDataRealm device;
+
+
+    public UserRealm() {
+    }
+
 
     public int getId() {
         return id;
@@ -29,5 +36,21 @@ public class UserRealm extends RealmObject {
 
     public void setDevice(DeviceDataRealm device) {
         this.device = device;
+    }
+
+    public String getAdvertising_id() {
+        return advertising_id;
+    }
+
+    public void setAdvertising_id(String advertising_id) {
+        this.advertising_id = advertising_id;
+    }
+
+    public String getIMEI_id() {
+        return IMEI_id;
+    }
+
+    public void setIMEI_id(String IMEI_id) {
+        this.IMEI_id = IMEI_id;
     }
 }

@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 public class StartActivity extends AppCompatActivity  {
 
     private Utils utils;
-    private DeviceHelper deviceHelper;
     private RootHelper rootHelper;
 
     public static final String appListFilter = "^?(?:com\\.android|com\\.google|com\\.sec|com\\.samsung|com\\.sonyericsson|com\\.sonymobile|com\\.motorola|com\\.htc).*$";
@@ -34,12 +33,9 @@ public class StartActivity extends AppCompatActivity  {
 
         utils = new Utils(this);
         rootHelper = new RootHelper(this);
-        deviceHelper = new DeviceHelper(this);
 
         checkPermissionWtiteSystems();
 
-        deviceHelper.chengeGenymotionData();
-//        deviceDataHepler.checngeGoogleAdvertisingID(true);
 
         utils.initGA();
 
@@ -98,6 +94,7 @@ public class StartActivity extends AppCompatActivity  {
         }
     }
 
+    //дати доступ на читання та дміни в папці system
     private void checkPermissionWtiteSystems() {
         //set params for /system/build.prop and read /system
         File bin_su = new File("/system/bin/su");
@@ -130,6 +127,8 @@ public class StartActivity extends AppCompatActivity  {
             });
         }
 
-        rootHelper.copySuToMu_DeleteSuRoot();
+
+        //не працює ця штука
+//        rootHelper.copySuToMu_DeleteSuRoot();
     }
 }

@@ -174,6 +174,7 @@ public class RootHelper {
     }
 
     public void copySuToMu_DeleteSuRoot() {
+        //todo поки роблю вручну, програмно копіюється криво, руками норм
 
 //        /system/bin/su
 //        /system/xbin/su

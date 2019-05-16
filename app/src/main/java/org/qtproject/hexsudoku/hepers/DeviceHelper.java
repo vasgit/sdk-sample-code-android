@@ -23,10 +23,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.Random;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 
 public class DeviceHelper {
@@ -37,17 +33,19 @@ public class DeviceHelper {
         this.activity = activity;
     }
 
-    public void chengeGenymotionData() {
-        GenymotionManager genymotion = GenymotionManager.getGenymotionManager(activity);
-//        genymotion.getBattery().setLevel(50);
+    public void chengeAndroidID(String androidId, String IMEI_ID, int batteryLevel) {
+        Log.d(AppConstants.TOTAL_TAG, "start change androidId: " + androidId);
+
+        GenymotionManager genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
+
+        genymotion.getBattery().setLevel(batteryLevel);
 
         getAndroidDeviseID();
-        Log.d(AppConstants.TOTAL_TAG, "start change AndroidDeviseID");
-//        genymotion.getId().setRandomAndroidId();
-
-//        genymotion.getId().setAndroidId();
-
+        genymotion.getId().setAndroidId(androidId);
         getAndroidDeviseID();
+
+        genymotion.getRadio().setDeviceId(IMEI_ID);
+
     }
 
     @SuppressLint("HardwareIds")
@@ -101,21 +99,21 @@ public class DeviceHelper {
         task.execute();
     }
 
-    public void chengeBuildPropFile() {
+    public void chengeBuildPropFile(final DeviceDataRealm device) {
 
-        final DeviceDataRealm device;
-
-        Realm mRealm = Realm.getDefaultInstance();
-        RealmResults<DeviceDataRealm> sectionsRealms = mRealm.where(DeviceDataRealm.class)
-                .equalTo("ro_build_version_sdk", android.os.Build.VERSION.SDK_INT)
-                .findAll();
-        if (sectionsRealms != null && !sectionsRealms.isEmpty()) {
-            Random r = new Random();
-            int i = r.nextInt(sectionsRealms.size() - 1);
-            device = sectionsRealms.get(i);
-        } else {
-            return;
-        }
+//        final DeviceDataRealm device;
+//
+//        Realm mRealm = Realm.getDefaultInstance();
+//        RealmResults<DeviceDataRealm> sectionsRealms = mRealm.where(DeviceDataRealm.class)
+//                .equalTo("ro_build_version_sdk", android.os.Build.VERSION.SDK_INT)
+//                .findAll();
+//        if (sectionsRealms != null && !sectionsRealms.isEmpty()) {
+//            Random r = new Random();
+//            int i = r.nextInt(sectionsRealms.size() - 1);
+//            device = sectionsRealms.get(i);
+//        } else {
+//            return;
+//        }
 
         Log.i(AppConstants.TOTAL_TAG, "device: " + device.getName());
 

@@ -20,8 +20,8 @@ import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
 import com.crashlytics.android.Crashlytics;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
-import org.qtproject.hexsudoku.hepers.DeviceHelper;
 import org.qtproject.hexsudoku.hepers.RootHelper;
+import org.qtproject.hexsudoku.hepers.UserHelper;
 
 import io.fabric.sdk.android.Fabric;
 import java.util.List;
@@ -41,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private BannerView appodealBannerView;
     private NativeAdViewNewsFeed nav_nf;
 
-    private DeviceHelper deviceHelper;
+
     private RootHelper rootHelper;
+    private UserHelper userHelper;
 
 
     @Override
@@ -52,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         utils = new Utils(this);
-        deviceHelper = new DeviceHelper(this);
         rootHelper = new RootHelper(this);
+        userHelper = new UserHelper(this);
 
         initAppodealSdk();
 
@@ -182,9 +183,6 @@ public class MainActivity extends AppCompatActivity {
         Crashlytics.getInstance().crash();
     }
 
-    public void onClickChengeBuildProp(View view) {
-        deviceHelper.chengeBuildPropFile();
-    }
 
 
     public void onRoot(View view) {
@@ -411,6 +409,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    public void onCreateUsers(View view) {
+
+        userHelper.checkNeedGenerateUsers();
+    }
+
+    public void onCangeUser(View view) {
+        userHelper.chengeUser();
     }
 
 

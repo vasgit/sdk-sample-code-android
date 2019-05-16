@@ -2,12 +2,18 @@ package org.qtproject.hexsudoku;
 
 import android.app.Application;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
+import java.io.File;
+
+import io.realm.DynamicRealm;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmMigration;
+import io.realm.RealmSchema;
 
 public class MyApplication extends MultiDexApplication {
 
@@ -19,14 +25,33 @@ public class MyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        Utils.copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm_v4),
-                "default.realm",
-                this.getFilesDir());
+        final File default_realm = new File(this.getFilesDir() + "default.realm");
+        if (!default_realm.exists()) {
+            Utils.copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm_v4),
+                    "default.realm", this.getFilesDir());
+        }
 
-        RealmConfiguration config = new RealmConfiguration.Builder(this)
-                .deleteRealmIfMigrationNeeded()
+        RealmMigration migration = new RealmMigration() {
+            @Override
+            public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
+                Log.d(TAG, "oldVersion = " + oldVersion);
+                Log.d(TAG, "newVersion = " + newVersion);
+
+                RealmSchema schema = realm.getSchema();
+                if (oldVersion == 0) {
+                    schema.get("UserRealm")
+                            .addField("advertising_id", String.class)
+                            .addField("IMEI_id", String.class);
+                    oldVersion++;
+                }
+            }
+        };
+
+        RealmConfiguration config = new RealmConfiguration
+                .Builder(this)
+                .schemaVersion(1) // Must be bumped when the schema changes
+                .migration(migration) // Migration to run instead of throwing an exception
                 .build();
-
         Realm.setDefaultConfiguration(config);
     }
 
