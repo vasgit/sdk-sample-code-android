@@ -412,12 +412,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onCreateUsers(View view) {
-
-        userHelper.checkNeedGenerateUsers();
+        userHelper.createUsers();
     }
 
     public void onCangeUser(View view) {
         userHelper.chengeUser();
+    }
+
+    public void onShowUsers(View view) {
+        userHelper.showUsers();
+    }
+
+    public void onDeleteUsers(View view) {
+        userHelper.deleteUsers();
     }
 
 

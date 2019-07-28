@@ -15,8 +15,12 @@ import io.realm.RealmResults;
 
 public class UserHelper {
 
+    private static String TAG =  UserHelper.class.getName();
+
     private Activity activity;
     private DeviceHelper deviceHelper;
+
+
 
     public UserHelper(Activity activity) {
         this.activity = activity;
@@ -47,17 +51,33 @@ public class UserHelper {
         deviceHelper.chengeAndroidID(userRealm.getAndroid_id(), userRealm.getIMEI_id(), poverLevel);
     }
 
-
-    public void checkNeedGenerateUsers() {
+    public void showUsers() {
         Realm mRealm = Realm.getDefaultInstance();
         RealmResults<UserRealm> userRealms = mRealm.where(UserRealm.class).findAll();
-        //todo
-//        if (userRealms == null || userRealms.isEmpty()) {
-            generateUsers();
-//        }
+        if (userRealms != null && !userRealms.isEmpty()) {
+            for (UserRealm user : userRealms) {
+                Log.d(TAG, "id: " + user.getId());
+
+
+            }
+        }
     }
 
-    private void generateUsers() {
+    public void deleteUsers() {
+        Realm mRealm = Realm.getDefaultInstance();
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<UserRealm> userRealms = realm.where(UserRealm.class).findAll();
+                if (userRealms != null && userRealms.size() > 0) {
+                    userRealms.clear();
+                    Log.d(TAG, "userRealms.clear()");
+                }
+            }
+        });
+    }
+
+    public void createUsers() {
         Realm mRealm = Realm.getDefaultInstance();
         final RealmResults<DeviceDataRealm> deviceDataRealms = mRealm.where(DeviceDataRealm.class)
                 .equalTo("ro_build_version_sdk", android.os.Build.VERSION.SDK_INT)
@@ -71,12 +91,14 @@ public class UserHelper {
                 userRealm.setAndroid_id(generateAndroidID());
                 userRealm.setIMEI_id(generateIMEI());
                 userRealm.setDevice(device);
+                userRealm.setRo_build_version_sdk(device.getRo_build_version_sdk());
                 mRealm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
                         realm.copyToRealmOrUpdate(userRealm);
                     }
                 });
+                Log.d(TAG, "createUser: " + i);
                 i++;
             }
         }

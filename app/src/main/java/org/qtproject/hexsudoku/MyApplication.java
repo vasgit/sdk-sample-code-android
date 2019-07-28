@@ -25,7 +25,7 @@ public class MyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        final File default_realm = new File(this.getFilesDir() + "default.realm");
+        final File default_realm = new File(this.getFilesDir() + "/default.realm");
         if (!default_realm.exists()) {
             Utils.copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm_v4),
                     "default.realm", this.getFilesDir());
@@ -41,7 +41,9 @@ public class MyApplication extends MultiDexApplication {
                 if (oldVersion == 0) {
                     schema.get("UserRealm")
                             .addField("advertising_id", String.class)
-                            .addField("IMEI_id", String.class);
+                            .addField("IMEI_id", String.class)
+                            .addField("ro_build_version_sdk", int.class)
+                    ;
                     oldVersion++;
                 }
             }

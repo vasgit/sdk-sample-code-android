@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
-import org.qtproject.hexsudoku.hepers.DeviceHelper;
 import org.qtproject.hexsudoku.hepers.RootHelper;
 
 import java.io.File;
@@ -28,6 +27,8 @@ public class StartActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //todo: для коректної роботи при страті потрібно скопіювати рутові файлики і назвати AppConstants.NAME_SU
 
         checkPermission();
 
@@ -94,7 +95,7 @@ public class StartActivity extends AppCompatActivity  {
         }
     }
 
-    //дати доступ на читання та дміни в папці system
+    //дати доступ на читання та зміни в папці system
     private void checkPermissionWtiteSystems() {
         //set params for /system/build.prop and read /system
         File bin_su = new File("/system/bin/su");

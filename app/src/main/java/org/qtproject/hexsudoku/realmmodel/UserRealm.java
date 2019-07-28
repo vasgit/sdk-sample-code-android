@@ -9,6 +9,8 @@ public class UserRealm extends RealmObject {
     private String android_id;
     private String advertising_id;
     private String IMEI_id;
+    private int ro_build_version_sdk;
+
 
 
     private DeviceDataRealm device;
@@ -52,5 +54,13 @@ public class UserRealm extends RealmObject {
 
     public void setIMEI_id(String IMEI_id) {
         this.IMEI_id = IMEI_id;
+    }
+
+    public int getRo_build_version_sdk() {
+        return ro_build_version_sdk;
+    }
+
+    public void setRo_build_version_sdk(int ro_build_version_sdk) {
+        this.ro_build_version_sdk = ro_build_version_sdk;
     }
 }
