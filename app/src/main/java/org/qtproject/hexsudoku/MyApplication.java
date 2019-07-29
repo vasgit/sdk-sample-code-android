@@ -26,7 +26,9 @@ public class MyApplication extends MultiDexApplication {
         super.onCreate();
 
         final File default_realm = new File(this.getFilesDir() + "/default.realm");
-        if (!default_realm.exists()) {
+        final File default_realm2 = new File(this.getFilesDir() + "default.realm");
+
+        if (!default_realm.exists() && !default_realm2.exists()) {
             Utils.copyBundledRealmFile(this.getResources().openRawResource(R.raw.default_realm_v4),
                     "default.realm", this.getFilesDir());
         }

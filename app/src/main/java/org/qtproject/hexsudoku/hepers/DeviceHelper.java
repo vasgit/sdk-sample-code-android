@@ -2,7 +2,10 @@ package org.qtproject.hexsudoku.hepers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -17,49 +20,84 @@ import org.qtproject.hexsudoku.R;
 import org.qtproject.hexsudoku.Utils;
 import org.qtproject.hexsudoku.constants.AppConstants;
 import org.qtproject.hexsudoku.realmmodel.DeviceDataRealm;
+import org.qtproject.hexsudoku.realmmodel.UserRealm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Random;
 
 
 public class DeviceHelper {
 
     private Activity activity;
+    private GenymotionManager genymotion;
+    private UserRealm userRealm;
+    private DeviceDataRealm deviceDataRealm;
+
 
     public DeviceHelper(Activity activity) {
         this.activity = activity;
     }
 
-    public void chengeAndroidID(String androidId, String IMEI_ID, int batteryLevel) {
-        Log.d(AppConstants.TOTAL_TAG, "start change androidId: " + androidId);
+    public void changeDevice(UserRealm userRealm) {
 
-        GenymotionManager genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
+        this.userRealm = userRealm;
+        deviceDataRealm = userRealm.getDevice();
+        genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
 
-        genymotion.getBattery().setLevel(batteryLevel);
+        Log.d(AppConstants.TOTAL_TAG, "start changeUser, current data:");
+        Log.d(AppConstants.TOTAL_TAG, "getPoverLevel(): " + getPoverLevel());
+        Log.d(AppConstants.TOTAL_TAG, "getAndroidID: " + userRealm.getAndroid_id());
+        Log.d(AppConstants.TOTAL_TAG, "getAdvertisingIdAppodeal: start ");
+        getAdvertisingId();
+        Log.d(AppConstants.TOTAL_TAG, "getIMEI: " + userRealm.getIMEI_id());
 
-        getAndroidDeviseID();
-        genymotion.getId().setAndroidId(androidId);
-        getAndroidDeviseID();
+        setPoverLevel();
+        setAndroidID();
+        setAdvertisingId();
+        setIMEI();
 
-        genymotion.getRadio().setDeviceId(IMEI_ID);
+//        changeBuildPropFile();
+    }
+
+
+
+    private void setPoverLevel() {
+        //todo poverLevel 16% - 100%
+        Random r = new Random();
+        int poverLevel = r.nextInt(100 - 16) + 16;
+
+        genymotion.getBattery().setLevel(poverLevel);
+
+        Log.d(AppConstants.TOTAL_TAG, "after change poverLevel: " + poverLevel);
+    }
+
+    private void setAndroidID() {
+        getAndroidID();
+        genymotion.getId().setAndroidId(userRealm.getAndroid_id());
+        getAndroidID();
+
+        Log.d(AppConstants.TOTAL_TAG, "after change androidId: " + userRealm.getAndroid_id());
+    }
+
+    private void setIMEI() {
+        genymotion.getRadio().setDeviceId(userRealm.getIMEI_id());
+        Log.d(AppConstants.TOTAL_TAG, "after change IMEI: " + userRealm.getIMEI_id());
+    }
+
+    private void setAdvertisingId() {
+        //todo: will need add
 
     }
 
-    @SuppressLint("HardwareIds")
-    private void getAndroidDeviseID() {
-        String androidDeviseID = "";
-        try {
-            androidDeviseID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-        } catch (Exception e) {
-            Log.e(AppConstants.TOTAL_TAG, e.toString());
-        }
-        Log.i(AppConstants.TOTAL_TAG, "androidDeviseID: " + androidDeviseID);
-    }
 
-    public void checngeGoogleAdvertisingID(final boolean needChecngeAdID) {
+
+
+
+    public void changeGoogleAdvertisingID(final boolean needChangeAdID) {
 
         @SuppressLint("StaticFieldLeak")
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
@@ -72,10 +110,8 @@ public class DeviceHelper {
                     e.printStackTrace();
                 }
                 String advertId = null;
-                try{
+                if (idInfo != null) {
                     advertId = idInfo.getId();
-                }catch (Exception e){
-                    e.printStackTrace();
                 }
 
                 return advertId;
@@ -85,37 +121,23 @@ public class DeviceHelper {
             protected void onPostExecute(String advertId) {
                 Log.i(AppConstants.TOTAL_TAG, "GoogleAdvertisingID: " + advertId);
 
-                if (needChecngeAdID) {
+                if (needChangeAdID) {
                     Log.d(AppConstants.TOTAL_TAG, "start change GoogleAdvertisingID");
                     try {
                         Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
                     } catch (Exception e) {
                         Log.e(AppConstants.TOTAL_TAG, "Exception", e);
                     }
-                    checngeGoogleAdvertisingID(false);
+                    changeGoogleAdvertisingID(false);
                 }
             }
         };
         task.execute();
     }
 
-    public void chengeBuildPropFile(final DeviceDataRealm device) {
+    public void changeBuildPropFile() {
 
-//        final DeviceDataRealm device;
-//
-//        Realm mRealm = Realm.getDefaultInstance();
-//        RealmResults<DeviceDataRealm> sectionsRealms = mRealm.where(DeviceDataRealm.class)
-//                .equalTo("ro_build_version_sdk", android.os.Build.VERSION.SDK_INT)
-//                .findAll();
-//        if (sectionsRealms != null && !sectionsRealms.isEmpty()) {
-//            Random r = new Random();
-//            int i = r.nextInt(sectionsRealms.size() - 1);
-//            device = sectionsRealms.get(i);
-//        } else {
-//            return;
-//        }
-
-        Log.i(AppConstants.TOTAL_TAG, "device: " + device.getName());
+        Log.i(AppConstants.TOTAL_TAG, "deviceDataRealm: " + deviceDataRealm.getName());
 
         Utils.copyBundledRealmFile(activity.getResources().openRawResource(R.raw.build_prop),
                 "build_in.prop",
@@ -130,7 +152,7 @@ public class DeviceHelper {
                 try {
                     String line;
                     while ((line = brInFile.readLine()) != null) {
-                        line = chengeLineBuildProp(line, device);
+                        line = changeLineBuildProp(line, deviceDataRealm);
                         if (!line.contains("%%")) {
                             brOutFile.write(line);
                             brOutFile.newLine();
@@ -161,7 +183,7 @@ public class DeviceHelper {
                             uiHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    checkBuildPropFileIsChenged(device);
+                                    checkBuildPropFileIsChenged(deviceDataRealm);
                                 }
                             }, 600);
 
@@ -221,7 +243,7 @@ public class DeviceHelper {
         }
     }
 
-    private String chengeLineBuildProp(String line, DeviceDataRealm device) {
+    private String changeLineBuildProp(String line, DeviceDataRealm device) {
         if (TextUtils.isEmpty(line)) {
             return line;
         }
@@ -247,6 +269,61 @@ public class DeviceHelper {
         if (!TextUtils.isEmpty(device.getRo_build_fingerprint())) line = line.replace("%%" + AppConstants.ro_build_fingerprint + "%", device.getRo_build_fingerprint());
 
         return line;
+    }
+
+
+    public int getPoverLevel() {
+        try {
+            IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent batteryStatus = activity.registerReceiver(null, iFilter);
+
+            int level = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) : -1;
+            int scale = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1) : -1;
+
+            float batteryPct = level / (float) scale;
+
+            return (int) (batteryPct * 100);
+        } catch (Exception e1) {
+            Log.d(AppConstants.TOTAL_TAG, e1.toString());
+        }
+        return 0;
+    }
+
+    @SuppressLint("HardwareIds")
+    private void getAndroidID() {
+        String androidDeviseID = "";
+        try {
+            androidDeviseID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+        } catch (Exception e) {
+            Log.e(AppConstants.TOTAL_TAG, e.toString());
+        }
+        Log.i(AppConstants.TOTAL_TAG, "androidDeviseID: " + androidDeviseID);
+    }
+
+    public void getAdvertisingId() {
+        @SuppressLint("StaticFieldLeak")
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                AdvertisingIdClient.Info idInfo = null;
+                try {
+                    idInfo = AdvertisingIdClient.getAdvertisingIdInfo(activity.getApplicationContext());
+                } catch (Exception e) {
+                    Log.d(AppConstants.TOTAL_TAG, e.toString());
+                }
+                String advertId = null;
+                if (idInfo != null) {
+                    advertId = idInfo.getId();
+                }
+                return advertId;
+            }
+
+            @Override
+            protected void onPostExecute(String advertId) {
+                Log.d(AppConstants.TOTAL_TAG, "setAdvertisingId: " + advertId);
+            }
+        };
+        task.execute();
     }
 
 }

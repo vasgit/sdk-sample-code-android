@@ -20,6 +20,7 @@ import com.appodeal.ads.native_ad.views.NativeAdViewNewsFeed;
 import com.crashlytics.android.Crashlytics;
 
 import org.qtproject.hexsudoku.constants.AppConstants;
+import org.qtproject.hexsudoku.hepers.DeviceHelper;
 import org.qtproject.hexsudoku.hepers.RootHelper;
 import org.qtproject.hexsudoku.hepers.UserHelper;
 
@@ -41,10 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private BannerView appodealBannerView;
     private NativeAdViewNewsFeed nav_nf;
 
-
     private RootHelper rootHelper;
     private UserHelper userHelper;
-
+    private DeviceHelper deviceHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         utils = new Utils(this);
         rootHelper = new RootHelper(this);
         userHelper = new UserHelper(this);
+        deviceHelper = new DeviceHelper(this);
 
         initAppodealSdk();
 
@@ -425,6 +426,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDeleteUsers(View view) {
         userHelper.deleteUsers();
+    }
+
+    public void onTest(View view) {
+//        Log.d(AppConstants.TOTAL_TAG, "getPoverLevel(): " + String.valueOf(deviceHelper.getAdvertisingIdAppodeal()));
+        deviceHelper.getAdvertisingId();
     }
 
 

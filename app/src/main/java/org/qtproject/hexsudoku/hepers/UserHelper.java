@@ -15,8 +15,6 @@ import io.realm.RealmResults;
 
 public class UserHelper {
 
-    private static String TAG =  UserHelper.class.getName();
-
     private Activity activity;
     private DeviceHelper deviceHelper;
 
@@ -28,27 +26,14 @@ public class UserHelper {
     }
 
     public void chengeUser() {
+        //todo
         int userId = 0;
 
         Realm mRealm = Realm.getDefaultInstance();
         RealmResults<UserRealm> userRealms = mRealm.where(UserRealm.class).equalTo("id", userId).findAll();
         if (userRealms != null && !userRealms.isEmpty()) {
-            chengeUser(userRealms.get(0));
+            deviceHelper.changeDevice(userRealms.get(0));
         }
-    }
-
-    private void chengeUser(UserRealm userRealm) {
-        //todo poverLevel 16% - 100%
-
-        Random r = new Random();
-        int poverLevel = r.nextInt(100 - 16) + 16;
-
-        Log.d(AppConstants.TOTAL_TAG, "start chengeUser:");
-        Log.d(AppConstants.TOTAL_TAG, "getAndroid_id: " + userRealm.getAndroid_id());
-        Log.d(AppConstants.TOTAL_TAG, "getIMEI_id: " + userRealm.getIMEI_id());
-        Log.d(AppConstants.TOTAL_TAG, "poverLevel: " + poverLevel);
-
-        deviceHelper.chengeAndroidID(userRealm.getAndroid_id(), userRealm.getIMEI_id(), poverLevel);
     }
 
     public void showUsers() {
@@ -56,9 +41,13 @@ public class UserHelper {
         RealmResults<UserRealm> userRealms = mRealm.where(UserRealm.class).findAll();
         if (userRealms != null && !userRealms.isEmpty()) {
             for (UserRealm user : userRealms) {
-                Log.d(TAG, "id: " + user.getId());
+                Log.d(AppConstants.TOTAL_TAG, "id: " + user.getId());
 
-
+                Log.d(AppConstants.TOTAL_TAG, "android_id: " + user.getAndroid_id());
+                Log.d(AppConstants.TOTAL_TAG, "advertising_id: " + user.getAdvertising_id());
+                Log.d(AppConstants.TOTAL_TAG, "IMEI_id: " + user.getIMEI_id());
+                Log.d(AppConstants.TOTAL_TAG, "ro_build_version_sdk: " + user.getRo_build_version_sdk());
+                Log.d(AppConstants.TOTAL_TAG, "getDevice: " + user.getDevice());
             }
         }
     }
@@ -71,7 +60,7 @@ public class UserHelper {
                 RealmResults<UserRealm> userRealms = realm.where(UserRealm.class).findAll();
                 if (userRealms != null && userRealms.size() > 0) {
                     userRealms.clear();
-                    Log.d(TAG, "userRealms.clear()");
+                    Log.d(AppConstants.TOTAL_TAG, "userRealms.clear()");
                 }
             }
         });
@@ -87,8 +76,8 @@ public class UserHelper {
             for (DeviceDataRealm device : deviceDataRealms) {
                 final UserRealm userRealm = new UserRealm();
                 userRealm.setId(i);
-                userRealm.setAdvertising_id(generateAdvertisingID());
                 userRealm.setAndroid_id(generateAndroidID());
+                userRealm.setAdvertising_id(generateAdvertisingID());
                 userRealm.setIMEI_id(generateIMEI());
                 userRealm.setDevice(device);
                 userRealm.setRo_build_version_sdk(device.getRo_build_version_sdk());
@@ -98,7 +87,7 @@ public class UserHelper {
                         realm.copyToRealmOrUpdate(userRealm);
                     }
                 });
-                Log.d(TAG, "createUser: " + i);
+                Log.d(AppConstants.TOTAL_TAG, "createUser: " + i);
                 i++;
             }
         }
