@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.genymotion.api.GenymotionManager;
+import com.genymotion.genyd.IGenydService;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 
 import org.qtproject.hexsudoku.R;
@@ -36,6 +37,7 @@ public class DeviceHelper {
     private GenymotionManager genymotion;
     private UserRealm userRealm;
     private DeviceDataRealm deviceDataRealm;
+    private IGenydService iGenydService;
 
 
     public DeviceHelper(Activity activity) {
@@ -43,55 +45,57 @@ public class DeviceHelper {
     }
 
     public void changeDevice(UserRealm userRealm) {
-
         this.userRealm = userRealm;
         deviceDataRealm = userRealm.getDevice();
         genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
 
-        Log.d(AppConstants.TOTAL_TAG, "start changeUser, current data:");
-        Log.d(AppConstants.TOTAL_TAG, "CURRENT getPoverLevel(): " + getPoverLevel());
-        Log.d(AppConstants.TOTAL_TAG, "CURRENT getAndroidID: " + userRealm.getAndroid_id());
-        Log.d(AppConstants.TOTAL_TAG, "CURRENT getAdvertisingId: start ");
-        getAdvertisingId("CURRENT");
-        Log.d(AppConstants.TOTAL_TAG, "CURRENT getIMEI: " + userRealm.getIMEI_id());
+        try {
+            iGenydService = (IGenydService) Utils.getObjectByName(genymotion.getRadio(), "genyd", false, 0);
+        } catch (Exception e) {
+            Log.e(AppConstants.TOTAL_TAG, e.toString());
+        }
 
-        //todo
+        Log.d(AppConstants.TOTAL_TAG, "//--" );
+        Log.d(AppConstants.TOTAL_TAG, "NEED change USER to:");
+        Log.d(AppConstants.TOTAL_TAG, "PoverLevel: random");
+        Log.d(AppConstants.TOTAL_TAG, "AndroidID: " + userRealm.getAndroid_id());
+        Log.d(AppConstants.TOTAL_TAG, "AdvertisingId: " + userRealm.getAdvertising_id());
+        Log.d(AppConstants.TOTAL_TAG, "IMEI: " + userRealm.getIMEI_id());
+        Log.d(AppConstants.TOTAL_TAG, "-" );
+
+        Log.d(AppConstants.TOTAL_TAG, "CURRENT User is:");
+        getPoverLevel(AppConstants.CURRENT);
+        getAndroidID(AppConstants.CURRENT);
+        getAdvertisingId(AppConstants.CURRENT);
+        getIMEI(AppConstants.CURRENT);
+
+
 //        setPoverLevel();
 //        setAndroidID();
-        setAdvertisingId();
+//        setAdvertisingId();
 //        setIMEI();
-
 //        changeBuildPropFile();
     }
 
 
 
     private void setPoverLevel() {
-        //todo poverLevel 16% - 100%
+        //poverLevel 15% - 100%
         Random r = new Random();
-        int poverLevel = r.nextInt(100 - 16) + 16;
-
+        int poverLevel = r.nextInt(100 - 15) + 15;
         genymotion.getBattery().setLevel(poverLevel);
-
-        Log.d(AppConstants.TOTAL_TAG, "CHANGED poverLevel: " + poverLevel);
     }
 
     private void setAndroidID() {
-        getAndroidID();
         genymotion.getId().setAndroidId(userRealm.getAndroid_id());
-        getAndroidID();
-
-        Log.d(AppConstants.TOTAL_TAG, "CHANGED androidId: " + userRealm.getAndroid_id());
+        getAndroidID(AppConstants.CHANGED);
     }
 
     private void setIMEI() {
         genymotion.getRadio().setDeviceId(userRealm.getIMEI_id());
-        Log.d(AppConstants.TOTAL_TAG, "CHANGED IMEI: " + userRealm.getIMEI_id());
     }
 
     public void setAdvertisingId() {
-
-        Log.d(AppConstants.TOTAL_TAG, "CHANGED getAdvertisingId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -129,7 +133,7 @@ public class DeviceHelper {
                         brOutFile.close();
                         brInFile.close();
                     } catch (Exception e) {
-                        Log.e(AppConstants.TOTAL_TAG, "e:" + e.toString());
+                        Log.e(AppConstants.TOTAL_TAG, e.toString());
                     }
                 }
 
@@ -162,7 +166,7 @@ public class DeviceHelper {
                                     uiHandler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            getAdvertisingId("CHANGED");
+                                            getAdvertisingId(AppConstants.CHANGED);
                                         }
                                     }, 200);
                                 } catch (Exception e) {
@@ -173,7 +177,7 @@ public class DeviceHelper {
                     }
                 }, 500);
             } catch (Exception e) {
-                Log.e(AppConstants.TOTAL_TAG, "Exception", e);
+                Log.e(AppConstants.TOTAL_TAG, e.toString());
             }
         } else {
             Log.e(AppConstants.TOTAL_TAG, "inFile NOT exists");
@@ -317,7 +321,8 @@ public class DeviceHelper {
     }
 
 
-    public int getPoverLevel() {
+    public int getPoverLevel(String tag) {
+        int poverLevel = 0;
         try {
             IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = activity.registerReceiver(null, iFilter);
@@ -327,22 +332,23 @@ public class DeviceHelper {
 
             float batteryPct = level / (float) scale;
 
-            return (int) (batteryPct * 100);
+            poverLevel = (int) (batteryPct * 100);
         } catch (Exception e1) {
             Log.d(AppConstants.TOTAL_TAG, e1.toString());
         }
-        return 0;
+        Log.i(AppConstants.TOTAL_TAG, tag + " getPoverLevel: " + poverLevel);
+        return poverLevel;
     }
 
     @SuppressLint("HardwareIds")
-    private void getAndroidID() {
+    private void getAndroidID(String tag) {
         String androidDeviseID = "";
         try {
             androidDeviseID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
         } catch (Exception e) {
             Log.e(AppConstants.TOTAL_TAG, e.toString());
         }
-        Log.i(AppConstants.TOTAL_TAG, "androidDeviseID: " + androidDeviseID);
+        Log.i(AppConstants.TOTAL_TAG, tag + " androidDeviseID: " + androidDeviseID);
     }
 
     public void getAdvertisingId(final String tag) {
@@ -365,10 +371,17 @@ public class DeviceHelper {
 
             @Override
             protected void onPostExecute(String advertId) {
-                Log.d(AppConstants.TOTAL_TAG, tag.toUpperCase() + " getAdvertisingId: " + advertId);
+                Log.d(AppConstants.TOTAL_TAG, tag + " getAdvertisingId: " + advertId);
             }
         };
         task.execute();
     }
 
+    private void getIMEI(String tag) {
+        try {
+            Log.d(AppConstants.TOTAL_TAG, tag + " IMEI: " + iGenydService.getDeviceId());
+        } catch (Exception e) {
+            Log.e(AppConstants.TOTAL_TAG, e.toString());
+        }
+    }
 }
