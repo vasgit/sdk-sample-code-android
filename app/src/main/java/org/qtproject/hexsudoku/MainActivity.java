@@ -430,7 +430,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onTest(View view) {
 //        Log.d(AppConstants.TOTAL_TAG, "getPoverLevel(): " + String.valueOf(deviceHelper.getAdvertisingIdAppodeal()));
-        deviceHelper.getAdvertisingId(AppConstants.CURRENT, null);
+
+        deviceHelper.getCurrentUserData();
+
 
     }
 

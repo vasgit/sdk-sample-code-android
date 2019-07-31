@@ -48,33 +48,29 @@ public class DeviceHelper {
     public void changeDevice(UserRealm userRealm) {
         this.userRealm = userRealm;
         deviceDataRealm = userRealm.getDevice();
-        genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
 
-        try {
-            iGenydService = (IGenydService) Utils.getObjectByName(genymotion.getRadio(), "genyd", false, 0);
-        } catch (Exception e) {
-            Log.e(AppConstants.TOTAL_TAG, e.toString());
-        }
+        create_iGenydService();
 
         Log.d(AppConstants.TOTAL_TAG, "//--" );
         Log.d(AppConstants.TOTAL_TAG, "NEED change USER to:");
+        Log.d(AppConstants.TOTAL_TAG, "id: " + userRealm.getId());
+        Log.d(AppConstants.TOTAL_TAG, "getDevice: " + userRealm.getDevice());
         Log.d(AppConstants.TOTAL_TAG, "PoverLevel: random");
         Log.d(AppConstants.TOTAL_TAG, "AndroidID: " + userRealm.getAndroid_id());
         Log.d(AppConstants.TOTAL_TAG, "AdvertisingId: " + userRealm.getAdvertising_id());
         Log.d(AppConstants.TOTAL_TAG, "IMEI: " + userRealm.getIMEI_id());
         Log.d(AppConstants.TOTAL_TAG, "-" );
 
-        Log.d(AppConstants.TOTAL_TAG, "CURRENT User is:");
-        getPoverLevel(AppConstants.CURRENT);
-        getAndroidID(AppConstants.CURRENT, null);
-        getAdvertisingId(AppConstants.CURRENT, null);
-        getIMEI(AppConstants.CURRENT, null);
+        getCurrentUserData();
 
-        setPoverLevel();
+        setPoverLevel(); //after rebut
         setAndroidID();
         setAdvertisingId();
-        setIMEI();
+        setIMEI(); //after rebut
+        changeBuildPropFile();
         Log.d(AppConstants.TOTAL_TAG, "-" );
+
+        //todo: деякі дані становлюються після перезагрузки
 
         Handler uiHandler1 = new Handler(Looper.getMainLooper());
         uiHandler1.postDelayed(new Runnable() {
@@ -83,9 +79,24 @@ public class DeviceHelper {
                 checkChangedUserData();
             }
         }, 900);
+    }
 
-//        todo
-//        changeBuildPropFile();
+    private void create_iGenydService() {
+        try {
+            genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
+            iGenydService = (IGenydService) Utils.getObjectByName(genymotion.getRadio(), "genyd", false, 0);
+        } catch (Exception e) {
+            Log.e(AppConstants.TOTAL_TAG, e.toString());
+        }
+    }
+
+    public void getCurrentUserData() {
+        Log.d(AppConstants.TOTAL_TAG, "CURRENT User is:");
+        getPoverLevel(AppConstants.CURRENT);
+        getAndroidID(AppConstants.CURRENT, null);
+        getAdvertisingId(AppConstants.CURRENT, null);
+        getIMEI(AppConstants.CURRENT, null);
+        showBuildFile();
     }
 
     private void checkChangedUserData() {
@@ -146,6 +157,9 @@ public class DeviceHelper {
     }
 
     private void getIMEI(String tag, @Nullable String needed) {
+        if (iGenydService == null) {
+            create_iGenydService();
+        }
         try {
             if (needed == null) {
                 Log.d(AppConstants.TOTAL_TAG, tag + " IMEI: " + iGenydService.getDeviceId());
@@ -242,7 +256,7 @@ public class DeviceHelper {
                 }
 
                 final String fileAbsolutePath = outFile.getAbsolutePath();
-                Log.d(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
+//                Log.d(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
 
 
                 activity.runOnUiThread(new Runnable() {
@@ -312,7 +326,7 @@ public class DeviceHelper {
                 }
 
                 final String fileAbsolutePath = outFile.getAbsolutePath();
-                Log.d(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
+//                Log.d(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -382,8 +396,10 @@ public class DeviceHelper {
 
         if (ro_build_id && ro_build_version_incremental && ro_product_model && ro_product_brand && ro_product_manufacturer) {
             Toast.makeText(activity, "build.prop Chenged !" + device.getName(), Toast.LENGTH_SHORT).show();
+            Log.i(AppConstants.TOTAL_TAG, "CHECK build.prop: - OK");
         } else {
             Toast.makeText(activity, "build.prop NOT Chenged !", Toast.LENGTH_SHORT).show();
+            Log.e(AppConstants.TOTAL_TAG, "CHECK build.prop: - NOT OK");
         }
     }
 
@@ -413,6 +429,43 @@ public class DeviceHelper {
         if (!TextUtils.isEmpty(device.getRo_build_fingerprint())) line = line.replace("%%" + AppConstants.ro_build_fingerprint + "%", device.getRo_build_fingerprint());
 
         return line;
+    }
+
+    private void showBuildFile() {
+        File inFile = new File("/system/build.prop");
+        if (inFile.exists()) {
+            try {
+                BufferedReader brInFile = new BufferedReader(new FileReader(inFile));
+                try {
+                    String line;
+                    while ((line = brInFile.readLine()) != null) {
+                        if (line.contains(AppConstants.ro_build_id)) {
+                            Log.d(AppConstants.TOTAL_TAG, line);
+                        }
+                        if (line.contains(AppConstants.ro_build_version_incremental)) {
+                            Log.d(AppConstants.TOTAL_TAG, line);
+                        }
+                        if (line.contains(AppConstants.ro_product_model)) {
+                            Log.d(AppConstants.TOTAL_TAG, line);
+                        }
+                        if (line.contains(AppConstants.ro_product_brand)) {
+                            Log.d(AppConstants.TOTAL_TAG, line);
+                        }
+                        if (line.contains(AppConstants.ro_product_manufacturer)) {
+                            Log.d(AppConstants.TOTAL_TAG, line);
+                        }
+                    }
+                } finally {
+                    try {
+                        brInFile.close();
+                    } catch (Exception e) {
+                        Log.e(AppConstants.TOTAL_TAG, "e:" + e.toString());
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(AppConstants.TOTAL_TAG, "Exception", e);
+            }
+        }
     }
 
 }

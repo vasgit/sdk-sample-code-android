@@ -30,7 +30,13 @@ public class UserHelper {
         int userId = 0;
 
         Realm mRealm = Realm.getDefaultInstance();
-        RealmResults<UserRealm> userRealms = mRealm.where(UserRealm.class).equalTo("id", userId).findAll();
+        RealmResults<UserRealm> userRealms = mRealm.where(UserRealm.class).findAll();
+        if (userRealms != null && userRealms.size() > 0) {
+            Random r = new Random();
+            userId = r.nextInt(userRealms.size());
+        }
+
+        userRealms = mRealm.where(UserRealm.class).equalTo("id", userId).findAll();
         if (userRealms != null && !userRealms.isEmpty()) {
             deviceHelper.changeDevice(userRealms.get(0));
         }
@@ -94,6 +100,7 @@ public class UserHelper {
     }
 
     private String generateIMEI() {
+        //todo: передивитися
         String charForGenerate = "1029384756123456789065748392010987654321";
         StringBuilder sbId = new StringBuilder();
 
@@ -117,6 +124,7 @@ public class UserHelper {
 
 
     private String generateAdvertisingID() {
+        //todo: передивитися
         String charForGenerate = "1q2w3e4r5t6y7u8i9o0p1a2s3d4f5g6h7j8k9l0zxcvbnm";
         StringBuilder sbId = new StringBuilder();
 
