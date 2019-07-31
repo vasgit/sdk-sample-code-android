@@ -49,16 +49,17 @@ public class DeviceHelper {
         genymotion = GenymotionManager.getGenymotionManager(activity.getApplicationContext());
 
         Log.d(AppConstants.TOTAL_TAG, "start changeUser, current data:");
-        Log.d(AppConstants.TOTAL_TAG, "getPoverLevel(): " + getPoverLevel());
-        Log.d(AppConstants.TOTAL_TAG, "getAndroidID: " + userRealm.getAndroid_id());
-        Log.d(AppConstants.TOTAL_TAG, "getAdvertisingIdAppodeal: start ");
-        getAdvertisingId();
-        Log.d(AppConstants.TOTAL_TAG, "getIMEI: " + userRealm.getIMEI_id());
+        Log.d(AppConstants.TOTAL_TAG, "CURRENT getPoverLevel(): " + getPoverLevel());
+        Log.d(AppConstants.TOTAL_TAG, "CURRENT getAndroidID: " + userRealm.getAndroid_id());
+        Log.d(AppConstants.TOTAL_TAG, "CURRENT getAdvertisingId: start ");
+        getAdvertisingId("CURRENT");
+        Log.d(AppConstants.TOTAL_TAG, "CURRENT getIMEI: " + userRealm.getIMEI_id());
 
-        setPoverLevel();
-        setAndroidID();
+        //todo
+//        setPoverLevel();
+//        setAndroidID();
         setAdvertisingId();
-        setIMEI();
+//        setIMEI();
 
 //        changeBuildPropFile();
     }
@@ -72,7 +73,7 @@ public class DeviceHelper {
 
         genymotion.getBattery().setLevel(poverLevel);
 
-        Log.d(AppConstants.TOTAL_TAG, "after change poverLevel: " + poverLevel);
+        Log.d(AppConstants.TOTAL_TAG, "CHANGED poverLevel: " + poverLevel);
     }
 
     private void setAndroidID() {
@@ -80,59 +81,103 @@ public class DeviceHelper {
         genymotion.getId().setAndroidId(userRealm.getAndroid_id());
         getAndroidID();
 
-        Log.d(AppConstants.TOTAL_TAG, "after change androidId: " + userRealm.getAndroid_id());
+        Log.d(AppConstants.TOTAL_TAG, "CHANGED androidId: " + userRealm.getAndroid_id());
     }
 
     private void setIMEI() {
         genymotion.getRadio().setDeviceId(userRealm.getIMEI_id());
-        Log.d(AppConstants.TOTAL_TAG, "after change IMEI: " + userRealm.getIMEI_id());
+        Log.d(AppConstants.TOTAL_TAG, "CHANGED IMEI: " + userRealm.getIMEI_id());
     }
 
-    private void setAdvertisingId() {
-        //todo: will need add
+    public void setAdvertisingId() {
 
-    }
+        Log.d(AppConstants.TOTAL_TAG, "CHANGED getAdvertisingId");
 
-
-
-
-
-    public void changeGoogleAdvertisingID(final boolean needChangeAdID) {
-
-        @SuppressLint("StaticFieldLeak")
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+        activity.runOnUiThread(new Runnable() {
             @Override
-            protected String doInBackground(Void... params) {
-                AdvertisingIdClient.Info idInfo = null;
+            public void run() {
                 try {
-                    idInfo = AdvertisingIdClient.getAdvertisingIdInfo(activity.getApplicationContext());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /data"});
+                } catch (Exception e1) {
+                    Log.e(AppConstants.TOTAL_TAG, e1.toString());
                 }
-                String advertId = null;
-                if (idInfo != null) {
-                    advertId = idInfo.getId();
-                }
-
-                return advertId;
             }
+        });
 
-            @Override
-            protected void onPostExecute(String advertId) {
-                Log.i(AppConstants.TOTAL_TAG, "GoogleAdvertisingID: " + advertId);
+        Utils.copyBundledRealmFile(activity.getResources().openRawResource(R.raw.adid_settings_xml),
+                "adid_settings_in.xml",
+                activity.getFilesDir());
 
-                if (needChangeAdID) {
-                    Log.d(AppConstants.TOTAL_TAG, "start change GoogleAdvertisingID");
-                    try {
-                        Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "rm -f /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
-                    } catch (Exception e) {
-                        Log.e(AppConstants.TOTAL_TAG, "Exception", e);
+
+        File inFile = new File(activity.getFilesDir(), "adid_settings_in.xml");
+        if (inFile.exists()) {
+            try {
+                File outFile = new File(activity.getFilesDir(), "adid_settings_out.xml");
+                BufferedWriter brOutFile = new BufferedWriter(new FileWriter(outFile));
+                BufferedReader brInFile = new BufferedReader(new FileReader(inFile));
+                try {
+                    String line;
+                    while ((line = brInFile.readLine()) != null) {
+                        if (line.contains("%%")) {
+                            line = line.replace("%%", userRealm.getAdvertising_id());
+                        }
+                        brOutFile.write(line);
+                        brOutFile.newLine();
                     }
-                    changeGoogleAdvertisingID(false);
+                } finally {
+                    try {
+                        brOutFile.close();
+                        brInFile.close();
+                    } catch (Exception e) {
+                        Log.e(AppConstants.TOTAL_TAG, "e:" + e.toString());
+                    }
                 }
+
+                final String fileAbsolutePath = outFile.getAbsolutePath();
+                Log.i(AppConstants.TOTAL_TAG, "fileAbsolutePath: " + fileAbsolutePath);
+
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "mount -o rw,remount /data/data/com.google.android.gms/shared_prefs"});
+                        } catch (Exception e) {
+                            Log.e(AppConstants.TOTAL_TAG, e.toString());
+                        }
+                    }
+                });
+
+                Handler uiHandler1 = new Handler(Looper.getMainLooper());
+                uiHandler1.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Runtime.getRuntime().exec(new String[]{AppConstants.NAME_SU, "-c", "cp -f " + fileAbsolutePath + " /data/data/com.google.android.gms/shared_prefs/adid_settings.xml"});
+
+                                    Handler uiHandler = new Handler(Looper.getMainLooper());
+                                    uiHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getAdvertisingId("CHANGED");
+                                        }
+                                    }, 200);
+                                } catch (Exception e) {
+                                    Log.e(AppConstants.TOTAL_TAG, e.toString());
+                                }
+                            }
+                        });
+                    }
+                }, 500);
+            } catch (Exception e) {
+                Log.e(AppConstants.TOTAL_TAG, "Exception", e);
             }
-        };
-        task.execute();
+        } else {
+            Log.e(AppConstants.TOTAL_TAG, "inFile NOT exists");
+        }
     }
 
     public void changeBuildPropFile() {
@@ -300,7 +345,7 @@ public class DeviceHelper {
         Log.i(AppConstants.TOTAL_TAG, "androidDeviseID: " + androidDeviseID);
     }
 
-    public void getAdvertisingId() {
+    public void getAdvertisingId(final String tag) {
         @SuppressLint("StaticFieldLeak")
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
@@ -320,7 +365,7 @@ public class DeviceHelper {
 
             @Override
             protected void onPostExecute(String advertId) {
-                Log.d(AppConstants.TOTAL_TAG, "setAdvertisingId: " + advertId);
+                Log.d(AppConstants.TOTAL_TAG, tag.toUpperCase() + " getAdvertisingId: " + advertId);
             }
         };
         task.execute();
