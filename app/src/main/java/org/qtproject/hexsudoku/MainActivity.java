@@ -394,6 +394,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Appodeal.setRewardedVideoCallbacks(new RewardedVideoCallbacks() {
+
+            @Override
+            public void onRewardedVideoClicked() {
+
+            }
+
             @Override
             public void onRewardedVideoLoaded(boolean b) {
                 Log.d(TAG, "onRewardedVideoLoaded");
