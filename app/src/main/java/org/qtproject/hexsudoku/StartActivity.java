@@ -27,22 +27,17 @@ public class StartActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //todo: для коректної роботи при страті потрібно скопіювати рутові файлики і назвати AppConstants.NAME_SU
-
-        checkPermission();
 
         utils = new Utils(this);
         rootHelper = new RootHelper(this);
 
         checkPermissionWtiteSystems();
 
-
         utils.initGA();
 
         // ADB - Android - Getting the name of the current activity
         // adb shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'
-
 
 //        Simply remount as rw (Read/Write):
 //        # mount -o rw,remount /system
@@ -51,8 +46,10 @@ public class StartActivity extends AppCompatActivity  {
 //        Once you are done making changes, remount to ro (read-only):
 //        # mount -o ro,remount /system
 
-
 //        adb shell mount -o rw,remount /system
+
+
+
 
 //        todo: fill if need
 //        new FillRealmData(this).fill();
@@ -75,24 +72,13 @@ public class StartActivity extends AppCompatActivity  {
 
         Log.d(AppConstants.TOTAL_TAG, "Apps end:");
 
-
-
+        //todo: булоб добре видалити цы бандли
         // com.genymotion.systempatcher
         // com.genymotion.genyd
         // com.genymotion.superuser
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-    }
-
-    private void checkPermission() {
-        if(ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
-            //ask for permission
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, AppConstants.READ_EXTERNAL_STORAGE_PERMISSION_CODE);
-            }
-        }
     }
 
     //дати доступ на читання та зміни в папці system
